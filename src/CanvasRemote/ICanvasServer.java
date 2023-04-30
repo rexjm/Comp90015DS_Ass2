@@ -48,4 +48,5 @@ public interface ICanvasServer extends Remote {
     // when the manager quits, application terminate
     void terminateApp() throws IOException;
 
+    byte[] updateImage(byte[] toByteArray) throws IOException;
 }

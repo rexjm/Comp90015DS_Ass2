@@ -104,7 +104,7 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
         }
     }
 
-    public byte[] UpdateImage() throws IOException {
+    public byte[] updateImage(byte[] toByteArray) throws IOException {
         byte[] image = null;
         for (ICanvasClient client : clientSet) {
             if (client.getClientManager() != null) {
