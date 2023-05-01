@@ -49,4 +49,10 @@ public interface ICanvasServer extends Remote {
     void terminateApp() throws IOException;
 
     byte[] updateImage(byte[] toByteArray) throws IOException;
+
+    Set<ICanvasClient> updateUserList();
+
+    void addChat(String s) throws RemoteException;
+
+    byte[] sendImage();
 }

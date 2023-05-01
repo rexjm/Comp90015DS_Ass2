@@ -33,7 +33,7 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
     public void checkUserValidity(ICanvasClient CanvasClient) throws RemoteException {
         boolean allowed = true;
         for (ICanvasClient canvasClient : clientSet) {
-            if (canvasClient.getClientManager() != null) {
+            if (canvasClient.getClientManager()) {
                 try {
                     allowed = canvasClient.allowJoin();
                 } catch (RemoteException e) {
@@ -107,16 +107,32 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
     public byte[] updateImage(byte[] toByteArray) throws IOException {
         byte[] image = null;
         for (ICanvasClient client : clientSet) {
-            if (client.getClientManager() != null) {
+            if (client.getClientManager()) {
                 image = client.sendImage();
             }
         }
         return image;
     }
+
+    @Override
+    public Set<ICanvasClient> updateUserList() {
+        return null;
+    }
+
+    @Override
+    public void addChat(String s) throws RemoteException {
+
+    }
+
+    @Override
+    public byte[] sendImage() {
+        return new byte[0];
+    }
+
     @Override
     public void openNewImage(byte[] image) throws IOException {
         for (ICanvasClient client : clientSet) {
-            if (client.getClientManager() == null) {
+            if (!client.getClientManager()) {
                 client.loadNewImage(image);
             }
         }

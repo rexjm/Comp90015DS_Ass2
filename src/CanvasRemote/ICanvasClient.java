@@ -35,7 +35,7 @@ public interface ICanvasClient extends Remote {
     void clearCanvas() throws RemoteException;
 
     // Load a new image on the client's canvas when the manager opens a new image
-    void loadNewImage(byte[] imageData) throws RemoteException;
+    void loadNewImage(byte[] imageData) throws IOException;
 
     // Get the client's name (username)
     String getClientName() throws RemoteException;
@@ -43,8 +43,10 @@ public interface ICanvasClient extends Remote {
     // Set the client's name (username)
     void setClientName() throws RemoteException;
 
+    void setClientName(String name) throws RemoteException;
+
     // Get the client's manager
-    String getClientManager() throws RemoteException;
+    boolean getClientManager() throws RemoteException;
 
     // Set the client's manager
     void setClientManager(String managerName) throws RemoteException;
@@ -59,9 +61,13 @@ public interface ICanvasClient extends Remote {
 
     boolean allowJoin() throws RemoteException;
 
+    boolean allowJoin(String name) throws RemoteException;
+
     void cleanCanvas() throws RemoteException;
 
     byte[] sendImage();
 
     void shutDownUI() throws RemoteException;
+
+    void initialize(ICanvasServer canvasServer);
 }
