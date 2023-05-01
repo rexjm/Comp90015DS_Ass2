@@ -13,7 +13,7 @@ public class CanvasServer {
     public static void main(String[] args) {
 
         try {
-            ICanvasServer CanvasServer = (ICanvasServer) new CanvasServer();
+            ICanvasServer CanvasServer = (ICanvasServer) new CanvasServerServant();
 
             //Publish the remote object's stub in the registry under the name "Compute"
 //            Registry registry = LocateRegistry.getRegistry();

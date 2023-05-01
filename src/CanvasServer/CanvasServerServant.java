@@ -7,6 +7,7 @@ import CanvasRemote.ICanvasStatus;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -43,7 +44,7 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
         }
         addClient(CanvasClient);
         for (ICanvasClient client : clientSet) {
-            client.updateUserList(getUsers());
+            client.updateUserList((Set<ICanvasClient>) getUsers());
         }
     }
 
@@ -68,7 +69,7 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
             }
         }
         for (ICanvasClient client : clientSet) {
-            client.updateUserList(getUsers());
+            client.updateUserList((Set<ICanvasClient>) getUsers());
         }
     }
 
@@ -82,13 +83,13 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
             }
         }
         for (ICanvasClient client : clientSet) {
-            client.updateUserList(getUsers());
+            client.updateUserList((Set<ICanvasClient>) getUsers());
         }
     }
 
     @Override
-    public Set<ICanvasClient> getUsers() throws RemoteException {
-        return clientSet;
+    public List<ICanvasClient> getUsers() throws RemoteException {
+        return (List<ICanvasClient>) clientSet;
     }
 
     @Override
@@ -115,7 +116,7 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
     }
 
     @Override
-    public Set<ICanvasClient> updateUserList() {
+    public List<ICanvasClient> updateUserList() {
         return null;
     }
 
@@ -125,8 +126,14 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
     }
 
     @Override
-    public byte[] sendImage() {
-        return new byte[0];
+    public byte[] sendImage() throws RemoteException {
+        byte[] image = null;
+        for (ICanvasClient client : clientSet) {
+            if (client.getClientManager()) {
+                image = client.sendImage();
+            }
+        }
+        return image;
     }
 
     @Override

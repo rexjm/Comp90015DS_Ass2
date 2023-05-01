@@ -3,6 +3,7 @@ package CanvasRemote;
 import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -30,7 +31,7 @@ public interface ICanvasServer extends Remote {
     void removeUser(String clientName) throws RemoteException;
 
     // getter function for clients
-    Set<ICanvasClient> getUsers() throws RemoteException;
+    List<ICanvasClient> getUsers() throws RemoteException;
 
     // show the canvas when a new client join
     byte[] loadExistCanvas() throws RemoteException;
@@ -50,9 +51,9 @@ public interface ICanvasServer extends Remote {
 
     byte[] updateImage(byte[] toByteArray) throws IOException;
 
-    Set<ICanvasClient> updateUserList();
+    List<ICanvasClient> updateUserList() throws RemoteException;
 
     void addChat(String s) throws RemoteException;
 
-    byte[] sendImage();
+    byte[] sendImage() throws RemoteException;
 }

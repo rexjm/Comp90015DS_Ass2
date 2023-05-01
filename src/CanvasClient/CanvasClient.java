@@ -152,7 +152,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
 
         Container content = frame.getContentPane();
 
-        CanvasWhiteboard CanvasWhiteboardUI = new CanvasWhiteboard(clientName, isManager, canvasServer);
+        canvasWhiteboard = new CanvasWhiteboard(clientName, isManager, canvasServer);
 
         blackBtn = new JButton();
         blackBtn.setBackground(Color.black);
@@ -341,7 +341,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                                 if(dialogResult == JOptionPane.YES_OPTION) {
                                     try {
                                         canvasServer.kickUser(selectedName);
-                                        updateUserList(canvasServer.updateUserList());
+                                        updateUserList((Set<ICanvasClient>) canvasServer.updateUserList());
                                     } catch (IOException e) {
                                         // TODO Auto-generated catch block
                                         System.err.println("There is an IO error.");
@@ -536,7 +536,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                             JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
                         try {
                             canvasServer.removeUser(clientName);
-                            updateUserList(canvasServer.updateUserList());
+                            updateUserList((Set<ICanvasClient>) canvasServer.updateUserList());
                         } catch (RemoteException e) {
                             JOptionPane.showMessageDialog(null, "Canvas server is down, please save and exit.");
                         } finally {
@@ -815,7 +815,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                     validName = true;
                 }
                 for(ICanvasClient c : CanvasServer.getUsers()) {
-                    if(client_name.equals(c.getClientName()) || c.getClientName().equals("*"+client_name)) {
+                    if(client_name.equals(c.getClientName()) || c.getClientName().equals("[Manager] "+client_name)) {
                         validName = false;
                         JOptionPane.showMessageDialog(null, "The name is taken, think a different name!");
                     }

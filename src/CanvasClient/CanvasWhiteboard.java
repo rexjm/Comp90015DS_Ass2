@@ -84,24 +84,24 @@ public class CanvasWhiteboard extends JComponent {
                             } catch (RemoteException ex) {
                                     JOptionPane.showMessageDialog(null,"Canvas server is down.");
                             }
-                        } else if (mode.equals("line")) {
-                        //when drawing, draw the previous image then add to it
-                            drawPreviousCanvas();
-                            shape = makeLine(shape, startPt, endPt);
-                        } else if (mode.equals("rect")) {
-                            drawPreviousCanvas ();
-                            shape = makeRect (shape, startPt, endPt);
-                        } else if (mode.equals("circle")) {
-                            drawPreviousCanvas();
-                            shape = makeCircle(shape, startPt, endPt);
-                        } else if (mode.equals("text")) {
-                            drawPreviousCanvas();
-                            graphics.setFont (new Font ("TimesRoman", Font.PLAIN, 20));
-                            graphics.drawString("Enter text here", endPt.x, endPt.y) ;
-                            shape = makeText(shape, startPt);
-                            Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 1, new float []{3}, 0);
-                            graphics.setStroke (dashed);
-                        }
+                    } else if (mode.equals("line")) {
+                    //when drawing, draw the previous image then add to it
+                        drawPreviousCanvas();
+                        shape = makeLine(shape, startPt, endPt);
+                    } else if (mode.equals("rect")) {
+                        drawPreviousCanvas ();
+                        shape = makeRect (shape, startPt, endPt);
+                    } else if (mode.equals("circle")) {
+                        drawPreviousCanvas();
+                        shape = makeCircle(shape, startPt, endPt);
+                    } else if (mode.equals("text")) {
+                        drawPreviousCanvas();
+                        graphics.setFont (new Font ("TimesRoman", Font.PLAIN, 20));
+                        graphics.drawString("Enter text here", endPt.x, endPt.y) ;
+                        shape = makeText(shape, startPt);
+                        Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 1, new float []{3}, 0);
+                        graphics.setStroke (dashed);
+                    }
                     //this shows the shape while dragging in local clients and does not send to server
                     graphics.draw(shape);
                     repaint();
@@ -125,8 +125,9 @@ public class CanvasWhiteboard extends JComponent {
                        shape = makeCircle(shape, startPt, endPt);
                    } else if (mode.equals("text")) {
                        text = JOptionPane.showInputDialog("What text you want to add?");
-                       if (text == null)
+                       if (text == null) {
                            text = "";
+                       }
                        drawPreviousCanvas();
                        graphics.setFont(new Font("TimesRoman", Font.PLAIN, 20));
                        graphics.drawString(text, endPt.x, endPt.y);
