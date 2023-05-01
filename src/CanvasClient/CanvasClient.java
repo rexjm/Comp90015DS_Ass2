@@ -795,14 +795,15 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
 
         try {
 
-            if(!(args[0].equals("localhost") || args[0].equals("127.0.0.1"))) {
+            if(!(args[0].equals("localhost") || !args[0].equals("127.0.0.1"))) {
                 System.err.println("Please enter localhost or 127.0.0.1");
                 return;
             }
-            String serverAddress = "//" + args[0]+":"+args[1] + "/WhiteBoardServer";
 
+            String serverAddress = "//" + args[0]+":"+args[1] + "/CanvasServer";
             //Look up the Canvas Server from the RMI name registry
-            CanvasServer = (ICanvasServer) Naming.lookup(serverAddress);
+            ICanvasServer canvasServer = (ICanvasServer) Naming.lookup(serverAddress);
+            System.out.println("Connected to the server!");
             ICanvasClient client =  new CanvasClient();
             //show user register GUI and register the user name to server
             boolean validName = false;
@@ -814,7 +815,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                 }else {
                     validName = true;
                 }
-                for(ICanvasClient c : CanvasServer.getUsers()) {
+                for(ICanvasClient c : canvasServer.getUsers()) {
                     if(client_name.equals(c.getClientName()) || c.getClientName().equals("[Manager] "+client_name)) {
                         validName = false;
                         JOptionPane.showMessageDialog(null, "The name is taken, think a different name!");
@@ -823,23 +824,25 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
             }
             client.setClientName(client_name);
             try {
-                CanvasServer.addUser(client);
+                canvasServer.addUser(client);
 
             } catch(RemoteException e) {
                 System.err.println("Error registering with remote server");
             }
 
             //launch the White Board GUI and start drawing
-            client.initialize(CanvasServer);
+            client.initialize(canvasServer);
             //dont have permission access
             if(!client.allowJoin()) {
-                CanvasServer.kickUser(client.getClientName());
+                canvasServer.kickUser(client.getClientName());
 
             }
         } catch(ConnectException e) {
             System.err.println("Server is down or wrong IP address or  Port number.");
+            e.printStackTrace();
         } catch(Exception e) {
             System.err.println("Please enter Valid IP and Port number.");
+            e.printStackTrace();
         }
     }
 
