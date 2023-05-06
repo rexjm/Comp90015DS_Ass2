@@ -8,6 +8,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.util.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -341,7 +342,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                                 if(dialogResult == JOptionPane.YES_OPTION) {
                                     try {
                                         canvasServer.kickUser(selectedName);
-                                        updateUserList((Set<ICanvasClient>) canvasServer.updateUserList());
+                                        updateUserList(canvasServer.updateUserList());
                                     } catch (IOException e) {
                                         // TODO Auto-generated catch block
                                         System.err.println("There is an IO error.");
@@ -536,7 +537,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                             JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
                         try {
                             canvasServer.removeUser(clientName);
-                            updateUserList((Set<ICanvasClient>) canvasServer.updateUserList());
+                            updateUserList(canvasServer.updateUserList());
                         } catch (RemoteException e) {
                             JOptionPane.showMessageDialog(null, "Canvas server is down, please save and exit.");
                         } finally {
@@ -546,6 +547,11 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                 }
             }
         });
+    }
+
+    @Override
+    public boolean allowJoin() throws RemoteException {
+        return allowed;
     }
 
 
@@ -662,7 +668,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
     }
 
     @Override
-    public void updateUserList(Set<ICanvasClient> usernames) throws RemoteException {
+    public void updateUserList(List<ICanvasClient> usernames) throws RemoteException {
         this.clientList.removeAllElements();
         for(ICanvasClient c: usernames) {
             try {
@@ -701,25 +707,21 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         return this.clientName;
     }
 
-    @Override
-    public void setClientName() throws RemoteException {
-
-    }
 
     @Override
     public void setClientName(String name) throws RemoteException {
         this.clientName = name;
-        return;
     }
 
     @Override
-    public boolean getClientManager() throws RemoteException {
+    public boolean isClientManager() throws RemoteException {
         return this.isManager;
     }
 
     @Override
     public void setClientManager(String managerName) throws RemoteException {
         this.isManager = true;
+        this.clientName = managerName;
     }
 
     @Override
@@ -734,13 +736,9 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
 
     }
 
-    @Override
-    public boolean allowJoin() throws RemoteException {
-        return false;
-    }
 
     @Override
-    public boolean allowJoin(String name) throws RemoteException {
+    public boolean askManagerPermission(String name) throws RemoteException {
         if (JOptionPane.showConfirmDialog(frame,
                 name + " wants to join. Do you approve?", "Grant permission",
                 JOptionPane.YES_NO_OPTION,
@@ -815,21 +813,27 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                 }else {
                     validName = true;
                 }
-                for(ICanvasClient c : canvasServer.getUsers()) {
-                    if(client_name.equals(c.getClientName()) || c.getClientName().equals("[Manager] "+client_name)) {
-                        validName = false;
-                        JOptionPane.showMessageDialog(null, "The name is taken, think a different name!");
+                // If the user is the first to be added
+                List<ICanvasClient> users = canvasServer.getUsers();
+                if (users != null) {
+                    for (ICanvasClient c : users) {
+                        if (c != null) {
+                            if (client_name.equals(c.getClientName()) || c.getClientName().equals("[Manager] " + client_name)) {
+                                validName = false;
+                                JOptionPane.showMessageDialog(null, "The name is taken, think a different name!");
+                            }
+                        }
                     }
                 }
             }
+            // if the name is valid, try to add it, need to get manager's permission
             client.setClientName(client_name);
+
             try {
                 canvasServer.addUser(client);
-
             } catch(RemoteException e) {
                 System.err.println("Error registering with remote server");
             }
-
             //launch the White Board GUI and start drawing
             client.initialize(canvasServer);
             //dont have permission access

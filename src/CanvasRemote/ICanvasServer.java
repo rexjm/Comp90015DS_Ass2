@@ -1,6 +1,7 @@
 package CanvasRemote;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.Set;
  *
  * The methods can be used by CanvasClient
  */
-public interface ICanvasServer extends Remote {
+public interface ICanvasServer extends Remote, Serializable {
 
     // Add the new clients connecting to server
     void addUser(ICanvasClient CanvasClient) throws RemoteException;

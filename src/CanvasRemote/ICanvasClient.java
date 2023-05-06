@@ -1,7 +1,9 @@
 package CanvasRemote;
 import java.io.IOException;
+import java.io.Serializable;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -14,13 +16,13 @@ import java.util.Set;
  * manager actions such as kicking users out and terminating the application.
  */
 
-public interface ICanvasClient extends Remote {
+public interface ICanvasClient extends Remote, Serializable {
 
     // Receive an updated shape drawn on the canvas by a user
     void updateCanvas(ICanvasStatus CanvasStatus) throws RemoteException;
 
     // Update the client's user list when a user is added or removed
-    void updateUserList(Set<ICanvasClient> usernames) throws RemoteException;
+    void updateUserList(List<ICanvasClient> usernames) throws RemoteException;
 
     // Notify the client when they are kicked out by the manager
     void notifyKickedOut() throws RemoteException;
@@ -41,12 +43,10 @@ public interface ICanvasClient extends Remote {
     String getClientName() throws RemoteException;
 
     // Set the client's name (username)
-    void setClientName() throws RemoteException;
-
     void setClientName(String name) throws RemoteException;
 
     // Get the client's manager
-    boolean getClientManager() throws RemoteException;
+    boolean isClientManager() throws RemoteException;
 
     // Set the client's manager
     void setClientManager(String managerName) throws RemoteException;
@@ -59,15 +59,15 @@ public interface ICanvasClient extends Remote {
     // Terminate the client application when the manager quits
     void terminateApp() throws RemoteException;
 
-    boolean allowJoin() throws RemoteException;
-
-    boolean allowJoin(String name) throws RemoteException;
+    boolean askManagerPermission(String name) throws RemoteException;
 
     void cleanCanvas() throws RemoteException;
 
-    byte[] sendImage();
+    byte[] sendImage() throws RemoteException;
 
     void shutDownUI() throws RemoteException;
 
-    void initialize(ICanvasServer canvasServer);
+    void initialize(ICanvasServer canvasServer) throws RemoteException;
+
+    boolean allowJoin() throws RemoteException;
 }

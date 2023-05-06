@@ -7,6 +7,8 @@ import CanvasRemote.ICanvasStatus;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -20,6 +22,7 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
 
     protected CanvasServerServant() throws RemoteException {
 //        this.canvasManager = new CanvasManager(this);
+        this.clientSet = new HashSet<ICanvasClient>();
     }
 
 
@@ -32,19 +35,29 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
 
     // Check the validity of the new user added and set it as the manager if there is no client.
     public void checkUserValidity(ICanvasClient CanvasClient) throws RemoteException {
-        boolean allowed = true;
-        for (ICanvasClient canvasClient : clientSet) {
-            if (canvasClient.getClientManager()) {
-                try {
-                    allowed = canvasClient.allowJoin();
-                } catch (RemoteException e) {
-                    throw new RuntimeException(e);
+        //If the client is the first to join, add directly
+        if (clientSet.size() == 0) {
+            addClientToList(CanvasClient);
+        } else {
+            boolean allowed = false;
+            // Locating the manager then ask his permission
+            for (ICanvasClient canvasClient : clientSet) {
+                if (canvasClient.isClientManager()) {
+                    try {
+                        allowed = canvasClient.askManagerPermission(CanvasClient.getClientName());
+                    } catch (RemoteException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
+            // if the new client get the permission from manager
+            if (allowed) {
+                addClientToList(CanvasClient);
+            }
         }
-        addClient(CanvasClient);
+        // Update the client lists for all clients
         for (ICanvasClient client : clientSet) {
-            client.updateUserList((Set<ICanvasClient>) getUsers());
+            client.updateUserList(getUsers());
         }
     }
 
@@ -54,6 +67,7 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
         if  (!hasManager()) {
             CanvasClient.setClientManager("[Manager] " + CanvasClient.getClientName());
         }
+        // Ask the manager whether the new client is allowed to join
         checkUserValidity(CanvasClient);
     }
 
@@ -69,7 +83,7 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
             }
         }
         for (ICanvasClient client : clientSet) {
-            client.updateUserList((Set<ICanvasClient>) getUsers());
+            client.updateUserList(getUsers());
         }
     }
 
@@ -83,13 +97,14 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
             }
         }
         for (ICanvasClient client : clientSet) {
-            client.updateUserList((Set<ICanvasClient>) getUsers());
+            client.updateUserList(getUsers());
         }
     }
 
     @Override
     public List<ICanvasClient> getUsers() throws RemoteException {
-        return (List<ICanvasClient>) clientSet;
+        List<ICanvasClient> clientList = new ArrayList<>(this.clientSet);
+        return clientList;
     }
 
     @Override
@@ -108,7 +123,7 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
     public byte[] updateImage(byte[] toByteArray) throws IOException {
         byte[] image = null;
         for (ICanvasClient client : clientSet) {
-            if (client.getClientManager()) {
+            if (client.isClientManager()) {
                 image = client.sendImage();
             }
         }
@@ -129,7 +144,7 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
     public byte[] sendImage() throws RemoteException {
         byte[] image = null;
         for (ICanvasClient client : clientSet) {
-            if (client.getClientManager()) {
+            if (client.isClientManager()) {
                 image = client.sendImage();
             }
         }
@@ -139,7 +154,7 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
     @Override
     public void openNewImage(byte[] image) throws IOException {
         for (ICanvasClient client : clientSet) {
-            if (!client.getClientManager()) {
+            if (!client.isClientManager()) {
                 client.loadNewImage(image);
             }
         }
@@ -168,8 +183,9 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
 
 
     // Add a new client to the client set
-    public void addClient(ICanvasClient client) {
+    public void addClientToList(ICanvasClient client) {
         this.clientSet.add(client);
+        System.out.println("Updated client set: " + clientSet);
     }
 
     // Get the set of clients

@@ -17,7 +17,7 @@ public class CanvasServer {
 
             //Publish the remote object's stub in the registry under the name "Compute"
 //            Registry registry = LocateRegistry.getRegistry();
-            Registry registry = LocateRegistry.createRegistry(Integer.parseInt("8888")); //args[0]
+            Registry registry = LocateRegistry.createRegistry(Integer.parseInt("7777")); //args[0]
             registry.bind("CanvasServer", CanvasServer);
 
             System.out.println("CanvasServer ready!");
