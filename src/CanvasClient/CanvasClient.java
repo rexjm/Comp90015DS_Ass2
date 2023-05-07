@@ -45,9 +45,8 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
     private JList<String> chatInputBox;
     private JButton cleanButton, lineButton, circleButton, ovalButton, rectangleButton,textButton, eraserButton;
     private JButton newButton, openButton, saveButton, saveAsButton,kickUserButton;
-    private JButton selectColourButton;
-    private JButton blackBtn, blueBtn, greenBtn, redBtn, orangeBtn, yellowBtn, cyanBtn;
-    private JButton brownBtn, pinkBtn, greyBtn, purpleBtn, limeBtn, darkgreyBtn, magentaBtn, aoiBtn, skyBtn;
+    private JButton orangeBtn, yellowBtn, cyanBtn, blackBtn, brownBtn, pinkBtn, greyBtn, blueBtn, greenBtn, redBtn;
+    private JButton purpleBtn, darkBlueBtn, darkgreyBtn, magentaBtn,  lightGrayBtn, whiteBtn;
     private DefaultListModel<String> clientList,chatList;
     private String clientName;
     private String fileName;
@@ -95,8 +94,6 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                     System.out.println(ex);
                 }
             }else if (source.equals(kickUserButton)) {
-
-            }else if (source.equals(selectColourButton)) {
 
             } else if (source.equals(lineButton)) {
                 canvasWhiteboard.line();
@@ -157,11 +154,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
 
         canvasWhiteboard = new CanvasWhiteboard(clientName, isManager, canvasServer);
 
-        blackBtn = new JButton();
-        blackBtn.setBackground(Color.black);
-        blackBtn.setBorderPainted(false);
-        blackBtn.setOpaque(true);
-        blackBtn.addActionListener(actionListener);
+
 
         blueBtn = new JButton();
         blueBtn.setBackground(Color.blue);
@@ -169,71 +162,11 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         blueBtn.setOpaque(true);
         blueBtn.addActionListener(actionListener);
 
-        greenBtn = new JButton();
-        greenBtn.setBackground(Color.green);
-        greenBtn.setBorderPainted(false);
-        greenBtn.setOpaque(true);
-        greenBtn.addActionListener(actionListener);
-
-        redBtn = new JButton();
-        redBtn.setBackground(Color.red);
-        redBtn.setBorderPainted(false);
-        redBtn.setOpaque(true);
-        redBtn.addActionListener(actionListener);
-
-        orangeBtn = new JButton();
-        orangeBtn.setBackground(Color.orange);
-        orangeBtn.setBorderPainted(false);
-        orangeBtn.setOpaque(true);
-        orangeBtn.addActionListener(actionListener);
-
-        yellowBtn = new JButton();
-        yellowBtn.setBackground(Color.yellow);
-        yellowBtn.setBorderPainted(false);
-        yellowBtn.setOpaque(true);
-        yellowBtn.addActionListener(actionListener);
-
         cyanBtn = new JButton();
         cyanBtn.setBackground(Color.cyan);
         cyanBtn.setBorderPainted(false);
         cyanBtn.setOpaque(true);
         cyanBtn.addActionListener(actionListener);
-
-        brownBtn = new JButton();
-        brownBtn.setBackground(new Color(153,76,0));
-        brownBtn.setBorderPainted(false);
-        brownBtn.setOpaque(true);
-        brownBtn.addActionListener(actionListener);
-
-        pinkBtn = new JButton();
-        pinkBtn.setBackground(new Color(255,153,204));
-        pinkBtn.setBorderPainted(false);
-        pinkBtn.setOpaque(true);
-        pinkBtn.addActionListener(actionListener);
-
-        greyBtn = new JButton();
-        greyBtn.setBackground(Color.gray);
-        greyBtn.setBorderPainted(false);
-        greyBtn.setOpaque(true);
-        greyBtn.addActionListener(actionListener);
-
-        purpleBtn = new JButton();
-        purpleBtn.setBackground(new Color(102,0,204));
-        purpleBtn.setBorderPainted(false);
-        purpleBtn.setOpaque(true);
-        purpleBtn.addActionListener(actionListener);
-
-        limeBtn = new JButton();
-        limeBtn.setBackground(new Color(102,102,0));
-        limeBtn.setBorderPainted(false);
-        limeBtn.setOpaque(true);
-        limeBtn.addActionListener(actionListener);
-
-        darkgreyBtn = new JButton();
-        darkgreyBtn.setBackground(Color.darkGray);
-        darkgreyBtn.setBorderPainted(false);
-        darkgreyBtn.setOpaque(true);
-        darkgreyBtn.addActionListener(actionListener);
 
         magentaBtn = new JButton();
         magentaBtn.setBackground(Color.magenta);
@@ -241,17 +174,122 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         magentaBtn.setOpaque(true);
         magentaBtn.addActionListener(actionListener);
 
-        aoiBtn = new JButton();
-        aoiBtn.setBackground(new Color(0,102,102));
-        aoiBtn.setBorderPainted(false);
-        aoiBtn.setOpaque(true);
-        aoiBtn.addActionListener(actionListener);
+        greenBtn = new JButton();
+        greenBtn.setBackground(Color.green);
+        greenBtn.setBorderPainted(false);
+        greenBtn.setOpaque(true);
+        greenBtn.addActionListener(actionListener);
 
-        skyBtn = new JButton();
-        skyBtn.setBackground(new Color(0,128,255));
-        skyBtn.setBorderPainted(false);
-        skyBtn.setOpaque(true);
-        skyBtn.addActionListener(actionListener);
+        yellowBtn = new JButton();
+        yellowBtn.setBackground(Color.yellow);
+        yellowBtn.setBorderPainted(false);
+        yellowBtn.setOpaque(true);
+        yellowBtn.addActionListener(actionListener);
+
+        orangeBtn = new JButton();
+        orangeBtn.setBackground(Color.orange);
+        orangeBtn.setBorderPainted(false);
+        orangeBtn.setOpaque(true);
+        orangeBtn.addActionListener(actionListener);
+
+        pinkBtn = new JButton();
+        pinkBtn.setBackground(Color.pink);
+        pinkBtn.setBorderPainted(false);
+        pinkBtn.setOpaque(true);
+        pinkBtn.addActionListener(actionListener);
+
+        redBtn = new JButton();
+        redBtn.setBackground(Color.red);
+        redBtn.setBorderPainted(false);
+        redBtn.setOpaque(true);
+        redBtn.addActionListener(actionListener);
+
+        blackBtn = new JButton();
+        blackBtn.setBackground(Color.black);
+        blackBtn.setBorderPainted(false);
+        blackBtn.setOpaque(true);
+        blackBtn.addActionListener(actionListener);
+
+        darkgreyBtn = new JButton();
+        darkgreyBtn.setBackground(Color.darkGray);
+        darkgreyBtn.setBorderPainted(false);
+        darkgreyBtn.setOpaque(true);
+        darkgreyBtn.addActionListener(actionListener);
+
+        greyBtn = new JButton();
+        greyBtn.setBackground(Color.gray);
+        greyBtn.setBorderPainted(false);
+        greyBtn.setOpaque(true);
+        greyBtn.addActionListener(actionListener);
+
+        lightGrayBtn = new JButton();
+        lightGrayBtn.setBackground(Color.lightGray);
+        lightGrayBtn.setBorderPainted(false);
+        lightGrayBtn.setOpaque(true);
+        lightGrayBtn.addActionListener(actionListener);
+
+        whiteBtn = new JButton();
+        whiteBtn.setBackground(Color.white);
+        whiteBtn.setBorderPainted(false);
+        whiteBtn.setOpaque(true);
+        whiteBtn.addActionListener(actionListener);
+
+        brownBtn = new JButton();
+        brownBtn.setBackground(new Color(153,76,0));
+        brownBtn.setBorderPainted(false);
+        brownBtn.setOpaque(true);
+        brownBtn.addActionListener(actionListener);
+
+        purpleBtn = new JButton();
+        purpleBtn.setBackground(new Color(128, 0, 128));
+        purpleBtn.setBorderPainted(false);
+        purpleBtn.setOpaque(true);
+        purpleBtn.addActionListener(actionListener);
+
+        darkBlueBtn = new JButton();
+        darkBlueBtn.setBackground(new Color(0, 0, 139));
+        darkBlueBtn.setBorderPainted(false);
+        darkBlueBtn.setOpaque(true);
+        darkBlueBtn.addActionListener(actionListener);
+
+        // Create colorButtonsPanel and set the color button size
+        JPanel colorButtonsPanel = new JPanel();
+        colorButtonsPanel.setLayout(new GridLayout(2, 8));
+        colorButtonsPanel.setMaximumSize(new Dimension(180, 50));
+        Dimension colorBtnDim = new Dimension(5, 5);
+        greenBtn.setPreferredSize(colorBtnDim);
+        redBtn.setPreferredSize(colorBtnDim);
+        orangeBtn.setPreferredSize(colorBtnDim);
+        pinkBtn.setPreferredSize(colorBtnDim);
+        darkgreyBtn.setPreferredSize(colorBtnDim);
+        yellowBtn.setPreferredSize(colorBtnDim);
+        blackBtn.setPreferredSize(colorBtnDim);
+        whiteBtn.setPreferredSize(colorBtnDim);
+        blueBtn.setPreferredSize(colorBtnDim);
+        greyBtn.setPreferredSize(colorBtnDim);
+        purpleBtn.setPreferredSize(colorBtnDim);
+        darkBlueBtn.setPreferredSize(colorBtnDim);
+        cyanBtn.setPreferredSize(colorBtnDim);
+        brownBtn.setPreferredSize(colorBtnDim);
+        magentaBtn.setPreferredSize(colorBtnDim);
+        lightGrayBtn.setPreferredSize(colorBtnDim);
+
+        colorButtonsPanel.add(orangeBtn);
+        colorButtonsPanel.add(redBtn);
+        colorButtonsPanel.add(greenBtn);
+        colorButtonsPanel.add(pinkBtn);
+        colorButtonsPanel.add(blackBtn);
+        colorButtonsPanel.add(whiteBtn);
+        colorButtonsPanel.add(yellowBtn);
+        colorButtonsPanel.add(cyanBtn);
+        colorButtonsPanel.add(brownBtn);
+        colorButtonsPanel.add(greyBtn);
+        colorButtonsPanel.add(purpleBtn);
+        colorButtonsPanel.add(darkBlueBtn);
+        colorButtonsPanel.add(darkgreyBtn);
+        colorButtonsPanel.add(blueBtn);
+        colorButtonsPanel.add(magentaBtn);
+        colorButtonsPanel.add(lightGrayBtn);
 
         LineBorder border = new LineBorder(Color.black, 2);
         Icon icon = new ImageIcon("./icon/1.png");
@@ -263,54 +301,46 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
 
         ImageIcon cleanIcon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/clean.png");
         cleanButton = new JButton(cleanIcon);
-        cleanButton.setIcon(resizeIcon(cleanIcon, 30, 30));
+        cleanButton.setIcon(resizeIcon(cleanIcon, 60, 60));
         cleanButton.setToolTipText("CLean the whiteboard");
         cleanButton.setBorder(border);
         cleanButton.addActionListener(actionListener);
         ImageIcon lineIcon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/line.png");
         lineButton = new JButton(lineIcon);
-        lineButton.setIcon(resizeIcon(lineIcon, 30, 30));
+        lineButton.setIcon(resizeIcon(lineIcon, 60, 60));
         lineButton.setToolTipText("Draw line");
         lineButton.setBorder(border);
         lineButton.addActionListener(actionListener);
         ImageIcon recIcon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/rectangle.png");
         rectangleButton = new JButton(recIcon);
-        rectangleButton.setIcon(resizeIcon(recIcon, 30, 30));
+        rectangleButton.setIcon(resizeIcon(recIcon, 60, 60));
         rectangleButton.setToolTipText("Draw rectangle");
         rectangleButton.setBorder(border);
         rectangleButton.addActionListener(actionListener);
         ImageIcon cirIcon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/circle.png");
         circleButton = new JButton(cirIcon);
-        circleButton.setIcon(resizeIcon(cirIcon, 30, 30));
+        circleButton.setIcon(resizeIcon(cirIcon, 60, 60));
         circleButton.setToolTipText("Draw circle");
         circleButton.setBorder(border);
         circleButton.addActionListener(actionListener);
         ImageIcon ovalIcon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/oval.png");
         ovalButton = new JButton(ovalIcon);
-        ovalButton.setIcon(resizeIcon(ovalIcon, 30, 30));
+        ovalButton.setIcon(resizeIcon(ovalIcon, 60, 60));
         ovalButton.setToolTipText("Draw oval");
         ovalButton.setBorder(border);
         ovalButton.addActionListener(actionListener);
         ImageIcon TBIcon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/Text-Box.png");
         textButton = new JButton(TBIcon);
-        textButton.setIcon(resizeIcon(TBIcon, 30, 30));
+        textButton.setIcon(resizeIcon(TBIcon, 60, 60));
         textButton.setToolTipText("Text box");
         textButton.setBorder(border);
         textButton.addActionListener(actionListener);
         ImageIcon eraserIcon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/eraser.png");
         eraserButton = new JButton(eraserIcon);
-        eraserButton.setIcon(resizeIcon(eraserIcon, 30, 30));
+        eraserButton.setIcon(resizeIcon(eraserIcon, 60, 60));
         eraserButton.setToolTipText("Eraser");
         eraserButton.setBorder(border);
         eraserButton.addActionListener(actionListener);
-
-//        btnList.add(drawBtn);
-//        btnList.add(lineBtn);
-//        btnList.add(rectBtn);
-//        btnList.add(circleBtn);
-//        btnList.add(triangleBtn);
-//        btnList.add(textBtn);
-//        btnList.add(eraserBtn);
 
         newButton = new JButton("New Board");
         newButton.setToolTipText("Create a new board");
@@ -327,7 +357,6 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         kickUserButton = new JButton("Remove User");
         kickUserButton.setToolTipText("Kick out the selected user");
         kickUserButton.addActionListener(actionListener);
-
 
         JList<String> list = new JList<>(clientList);
         JScrollPane currUsers = new JScrollPane(list);
@@ -372,8 +401,10 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         // create a chatbox with a send button
         chatInputBox = new JList<>(chatList);
         msgArea = new JScrollPane(chatInputBox);
-        msgArea.setMinimumSize(new Dimension(100, 100));
+        msgArea.setMaximumSize(new Dimension(950, 300));
         JTextField msgText = new JTextField();
+        msgText.setMaximumSize(new Dimension(870, 140));
+
         JButton sendBtn = new JButton("Send"); //addMouseListener here 直接call server 去broadcast message
         sendBtn.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
@@ -401,9 +432,9 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         layout.setAutoCreateGaps(true);
         layout.setAutoCreateContainerGaps(true);
 
+        // The Horizontal layout
         layout.setHorizontalGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(CENTER)
-//                        .addComponent(drawBtn)
                         .addComponent(lineButton)
                         .addComponent(rectangleButton)
                         .addComponent(circleButton)
@@ -411,56 +442,44 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                         .addComponent(textButton)
                         .addComponent(eraserButton)
                         .addComponent(cleanButton)
-                )
-                .addGroup(layout.createParallelGroup(CENTER)
-                        .addComponent(canvasWhiteboard)
-                        .addComponent(msgArea)
-                        .addGroup(layout.createSequentialGroup()
-
-                                .addComponent(msgText)
-                                .addComponent(sendBtn)
-                        )
-                        .addGroup(layout.createSequentialGroup()
-                                .addComponent(blackBtn)
-                                .addComponent(yellowBtn)
-                                .addComponent(cyanBtn)
-                                .addComponent(brownBtn)
-                                .addComponent(greyBtn)
-                                .addComponent(purpleBtn)
-                                .addComponent(limeBtn)
-
-                                .addComponent(orangeBtn)
-
-
-                        )
-                        .addGroup(layout.createSequentialGroup()
-                                .addComponent(pinkBtn)
-                                .addComponent(redBtn)
-                                .addComponent(greenBtn)
-                                .addComponent(blueBtn)
-                                .addComponent(darkgreyBtn)
-                                .addComponent(magentaBtn)
-                                .addComponent(aoiBtn)
-                                .addComponent(skyBtn)
-                        )
-
-                )
-                .addGroup(layout.createParallelGroup(CENTER)
-                        .addComponent(openButton)
-                        .addComponent(saveButton)
-                        .addComponent(saveAsButton)
                         .addComponent(currUsers)
                         .addComponent(kickUserButton)
-//                        .addComponent(tellColor)
-//                        .addComponent(displayColor)
+                )
+                .addGroup(layout.createParallelGroup()
+                        .addGroup(layout.createSequentialGroup()
+                                .addComponent(openButton)
+                                .addComponent(saveButton)
+                                .addComponent(saveAsButton)
+                                .addComponent(colorButtonsPanel)
+                        )
+                        .addGroup(layout.createParallelGroup()
+                                .addComponent(canvasWhiteboard)
+                                .addComponent(msgArea)
+                                .addGroup(layout.createSequentialGroup()
+                                        .addComponent(msgText)
+                                        .addComponent(sendBtn)
+                                )
+                        )
                 )
         );
 
+// The vertical layout
         layout.setVerticalGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(BASELINE)
                         .addGroup(layout.createSequentialGroup()
-//                                .addComponent(drawBtn)
                                 .addComponent(lineButton)
+                        )
+                        .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+                                        .addComponent(openButton)
+                                        .addComponent(saveButton)
+                                        .addComponent(saveAsButton)
+                                        .addComponent(colorButtonsPanel)
+                                )
+                        )
+                )
+                .addGroup(layout.createParallelGroup(BASELINE)
+                        .addGroup(layout.createSequentialGroup()
                                 .addComponent(rectangleButton)
                                 .addComponent(circleButton)
                                 .addComponent(ovalButton)
@@ -468,55 +487,30 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                                 .addComponent(eraserButton)
                                 .addComponent(cleanButton)
                         )
-                        .addComponent(canvasWhiteboard)
                         .addGroup(layout.createSequentialGroup()
-                                .addComponent(openButton)
-                                .addComponent(saveButton)
-                                .addComponent(saveAsButton)
+                                .addComponent(canvasWhiteboard)
+                        )
+                )
+                .addGroup(layout.createParallelGroup(BASELINE)
+                        .addGroup(layout.createSequentialGroup()
                                 .addComponent(currUsers)
                                 .addComponent(kickUserButton)
-//                                .addComponent(tellColor)
-//                                .addComponent(displayColor)
                         )
-                )
-                .addGroup(layout.createSequentialGroup()
-                        .addComponent(msgArea)
-                        .addGroup(layout.createParallelGroup()
-                                .addComponent(msgText)
-                                .addComponent(sendBtn)
-                        )
-                )
-                .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(BASELINE)
-                                .addComponent(blackBtn)
-                                .addComponent(yellowBtn)
-                                .addComponent(cyanBtn)
-                                .addComponent(brownBtn)
-                                .addComponent(greyBtn)
-                                .addComponent(purpleBtn)
-                                .addComponent(limeBtn)
-                                .addComponent(orangeBtn)
-                        )
-                        .addGroup(layout.createParallelGroup(BASELINE)
-                                .addComponent(pinkBtn)
-                                .addComponent(redBtn)
-                                .addComponent(greenBtn)
-                                .addComponent(blueBtn)
-                                .addComponent(darkgreyBtn)
-                                .addComponent(magentaBtn)
-                                .addComponent(aoiBtn)
-                                .addComponent(skyBtn)
+                        .addGroup(layout.createSequentialGroup()
+                                .addComponent(msgArea)
+                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+                                        .addComponent(msgText)
+                                        .addComponent(sendBtn)
+                                )
                         )
                 )
         );
-
         //format to same size
-        layout.linkSize(SwingConstants.HORIZONTAL, cleanButton, saveButton, saveAsButton, openButton);
-
+//        layout.linkSize(SwingConstants.HORIZONTAL, cleanButton, saveButton, saveAsButton, openButton);
 
         // set the minimum framesize
-        if (isManager) frame.setMinimumSize(new Dimension(820, 600));
-        else frame.setMinimumSize(new Dimension(820, 600));
+        if (isManager) frame.setMinimumSize(new Dimension(1200, 800));
+        else frame.setMinimumSize(new Dimension(1200, 800));
 
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);

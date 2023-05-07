@@ -169,7 +169,7 @@ public class CanvasWhiteboard extends JComponent {
     protected void paintComponent (Graphics g) {
         if (image == null) {
             if (isManager) {
-                image = new BufferedImage(700, 350, BufferedImage.TYPE_INT_RGB);
+                image = new BufferedImage(950, 550, BufferedImage.TYPE_INT_RGB);
                 graphics = (Graphics2D) image.getGraphics();
                 graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 reset();
@@ -202,7 +202,7 @@ public class CanvasWhiteboard extends JComponent {
         }
         public void reset(){
         graphics.setPaint (Color.white);
-        graphics. fillRect(0, 0, 700, 350);
+        graphics. fillRect(0, 0, 950, 550);
         graphics.setPaint (color);
         repaint();
     }
