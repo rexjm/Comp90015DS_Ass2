@@ -70,4 +70,6 @@ public interface ICanvasClient extends Remote, Serializable {
     void initialize(ICanvasServer canvasServer) throws RemoteException;
 
     boolean allowJoin() throws RemoteException;
+
+    void setAllowed(boolean permission) throws RemoteException;
 }

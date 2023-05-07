@@ -551,7 +551,12 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
 
     @Override
     public boolean allowJoin() throws RemoteException {
-        return allowed;
+        return this.allowed;
+    }
+
+    @Override
+    public void setAllowed(boolean permission) throws RemoteException {
+        this.allowed = permission;
     }
 
 
@@ -748,9 +753,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
             return false;
         }
     }
-    public boolean getPermission() {
-        return this.allowed;
-    }
+
     @Override
     public void cleanCanvas() throws RemoteException {
 
@@ -828,7 +831,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
             }
             // if the name is valid, try to add it, need to get manager's permission
             client.setClientName(client_name);
-
+            // add the user to the client list in server
             try {
                 canvasServer.addUser(client);
             } catch(RemoteException e) {
@@ -836,10 +839,9 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
             }
             //launch the White Board GUI and start drawing
             client.initialize(canvasServer);
-            //dont have permission access
+            //do not get the permission from manager
             if(!client.allowJoin()) {
                 canvasServer.kickUser(client.getClientName());
-
             }
         } catch(ConnectException e) {
             System.err.println("Server is down or wrong IP address or  Port number.");

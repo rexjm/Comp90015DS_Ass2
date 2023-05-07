@@ -66,6 +66,8 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
     public void addUser(ICanvasClient CanvasClient) throws RemoteException {
         if  (!hasManager()) {
             CanvasClient.setClientManager("[Manager] " + CanvasClient.getClientName());
+            // The first person is allowed to join
+            CanvasClient.setAllowed(true);
         }
         // Ask the manager whether the new client is allowed to join
         checkUserValidity(CanvasClient);
@@ -77,8 +79,8 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
     public void kickUser(String clientName) throws RemoteException {
         for (ICanvasClient client : clientSet) {
             if (client.getClientName().equals(clientName)) {
-                kickClient(clientName);
-                System.out.println("User" + clientName + "has been removed!");
+                this.clientSet.remove(client);
+                System.out.println("User" + clientName + " has been removed!");
                 client.shutDownUI();
             }
         }
@@ -92,7 +94,7 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
     public void removeUser(String clientName) throws RemoteException {
         for (ICanvasClient client : clientSet) {
             if (client.getClientName().equals(clientName)) {
-                kickClient(clientName);
+                this.clientSet.remove(client);
                 System.out.println("User" + clientName + "quits!");
             }
         }
@@ -198,10 +200,6 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
         this. manager = manager;
     }
 
-    // Kick out a client from the client list
-    public void kickClient(String client) {
-        this.clientSet.remove(client);
-    }
 
     // Check if the canvas has a manager
     public boolean hasManager() {
