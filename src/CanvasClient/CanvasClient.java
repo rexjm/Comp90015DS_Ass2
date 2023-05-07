@@ -44,7 +44,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
     private JScrollPane msgArea;
     private JList<String> chatInputBox;
     private JButton cleanButton, lineButton, circleButton, ovalButton, rectangleButton,textButton, eraserButton;
-    private JButton newButton, openButton, saveButton, saveAsButton;
+    private JButton newButton, openButton, saveButton, saveAsButton,kickUserButton;
     private JButton selectColourButton;
     private JButton blackBtn, blueBtn, greenBtn, redBtn, orangeBtn, yellowBtn, cyanBtn;
     private JButton brownBtn, pinkBtn, greyBtn, purpleBtn, limeBtn, darkgreyBtn, magentaBtn, aoiBtn, skyBtn;
@@ -68,7 +68,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
     ActionListener actionListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            LineBorder noChosen = new LineBorder(new Color(238, 238,238), 1);
+            LineBorder noChosen = new LineBorder(new Color(238, 238, 238), 1);
             LineBorder chosen = new LineBorder(Color.BLUE, 1);
 
             Object source = e.getSource();
@@ -94,7 +94,9 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                 } catch (IOException ex) {
                     System.out.println(ex);
                 }
-            } else if (source.equals(selectColourButton)) {
+            }else if (source.equals(kickUserButton)) {
+
+            }else if (source.equals(selectColourButton)) {
 
             } else if (source.equals(lineButton)) {
                 canvasWhiteboard.line();
@@ -259,42 +261,45 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
 //        drawBtn.addActionListener(actionListener);
         border = new LineBorder(new Color(238,238,238), 2);
 
-        icon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/clean.png");
-        cleanButton = new JButton(icon);
+        ImageIcon cleanIcon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/clean.png");
+        cleanButton = new JButton(cleanIcon);
+        cleanButton.setIcon(resizeIcon(cleanIcon, 30, 30));
         cleanButton.setToolTipText("CLean the whiteboard");
         cleanButton.setBorder(border);
         cleanButton.addActionListener(actionListener);
-        icon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/line.png");
-        lineButton = new JButton(icon);
+        ImageIcon lineIcon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/line.png");
+        lineButton = new JButton(lineIcon);
+        lineButton.setIcon(resizeIcon(lineIcon, 30, 30));
         lineButton.setToolTipText("Draw line");
         lineButton.setBorder(border);
         lineButton.addActionListener(actionListener);
-        icon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/rectangle.png");
-        rectangleButton = new JButton(icon);
+        ImageIcon recIcon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/rectangle.png");
+        rectangleButton = new JButton(recIcon);
+        rectangleButton.setIcon(resizeIcon(recIcon, 30, 30));
         rectangleButton.setToolTipText("Draw rectangle");
         rectangleButton.setBorder(border);
         rectangleButton.addActionListener(actionListener);
-        icon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/circle.png");
-        circleButton = new JButton(icon);
+        ImageIcon cirIcon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/circle.png");
+        circleButton = new JButton(cirIcon);
+        circleButton.setIcon(resizeIcon(cirIcon, 30, 30));
         circleButton.setToolTipText("Draw circle");
         circleButton.setBorder(border);
         circleButton.addActionListener(actionListener);
-        icon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/oval.png");
-        ovalButton = new JButton(icon);
+        ImageIcon ovalIcon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/oval.png");
+        ovalButton = new JButton(ovalIcon);
+        ovalButton.setIcon(resizeIcon(ovalIcon, 30, 30));
         ovalButton.setToolTipText("Draw oval");
         ovalButton.setBorder(border);
         ovalButton.addActionListener(actionListener);
-        icon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/rectangle.png");
-        rectangleButton = new JButton(icon);
-        rectangleButton.setBorder(border);
-        rectangleButton.addActionListener(actionListener);
-        icon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/Text-Box.png");
-        textButton = new JButton(icon);
+        ImageIcon TBIcon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/Text-Box.png");
+        textButton = new JButton(TBIcon);
+        textButton.setIcon(resizeIcon(TBIcon, 30, 30));
         textButton.setToolTipText("Text box");
         textButton.setBorder(border);
         textButton.addActionListener(actionListener);
-        icon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/eraser.png");
-        eraserButton = new JButton(icon);
+        ImageIcon eraserIcon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/eraser.png");
+        eraserButton = new JButton(eraserIcon);
+        eraserButton.setIcon(resizeIcon(eraserIcon, 30, 30));
         eraserButton.setToolTipText("Eraser");
         eraserButton.setBorder(border);
         eraserButton.addActionListener(actionListener);
@@ -319,6 +324,9 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         saveAsButton = new JButton("Save as");
         saveAsButton.setToolTipText("Save image file");
         saveAsButton.addActionListener(actionListener);
+        kickUserButton = new JButton("Remove User");
+        kickUserButton.setToolTipText("Kick out the selected user");
+        kickUserButton.addActionListener(actionListener);
 
 
         JList<String> list = new JList<>(clientList);
@@ -402,6 +410,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                         .addComponent(ovalButton)
                         .addComponent(textButton)
                         .addComponent(eraserButton)
+                        .addComponent(cleanButton)
                 )
                 .addGroup(layout.createParallelGroup(CENTER)
                         .addComponent(canvasWhiteboard)
@@ -437,11 +446,11 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
 
                 )
                 .addGroup(layout.createParallelGroup(CENTER)
-                        .addComponent(cleanButton)
                         .addComponent(openButton)
                         .addComponent(saveButton)
                         .addComponent(saveAsButton)
                         .addComponent(currUsers)
+                        .addComponent(kickUserButton)
 //                        .addComponent(tellColor)
 //                        .addComponent(displayColor)
                 )
@@ -451,20 +460,21 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                 .addGroup(layout.createParallelGroup(BASELINE)
                         .addGroup(layout.createSequentialGroup()
 //                                .addComponent(drawBtn)
-                                        .addComponent(lineButton)
-                                        .addComponent(rectangleButton)
-                                        .addComponent(circleButton)
-                                        .addComponent(ovalButton)
-                                        .addComponent(textButton)
-                                        .addComponent(eraserButton)
+                                .addComponent(lineButton)
+                                .addComponent(rectangleButton)
+                                .addComponent(circleButton)
+                                .addComponent(ovalButton)
+                                .addComponent(textButton)
+                                .addComponent(eraserButton)
+                                .addComponent(cleanButton)
                         )
                         .addComponent(canvasWhiteboard)
                         .addGroup(layout.createSequentialGroup()
-                                .addComponent(cleanButton)
                                 .addComponent(openButton)
                                 .addComponent(saveButton)
                                 .addComponent(saveAsButton)
                                 .addComponent(currUsers)
+                                .addComponent(kickUserButton)
 //                                .addComponent(tellColor)
 //                                .addComponent(displayColor)
                         )
@@ -486,7 +496,6 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                                 .addComponent(purpleBtn)
                                 .addComponent(limeBtn)
                                 .addComponent(orangeBtn)
-
                         )
                         .addGroup(layout.createParallelGroup(BASELINE)
                                 .addComponent(pinkBtn)
@@ -789,6 +798,13 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         });
         t.start();
     }
+
+    private ImageIcon resizeIcon(ImageIcon icon, int width, int height) {
+        Image img = icon.getImage();
+        Image resizedImage = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        return new ImageIcon(resizedImage);
+    }
+
     public static void main(String[] args) throws RemoteException, MalformedURLException, NotBoundException, ServerNotActiveException {
         if(args.length != 2) {
             throw new IllegalArgumentException("Need exactly two arguments.");
