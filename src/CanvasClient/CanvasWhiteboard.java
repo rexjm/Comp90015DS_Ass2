@@ -41,6 +41,7 @@ public class CanvasWhiteboard extends JComponent {
         this.mode = "draw"; //default mode
         this.text = "";
 
+        // Disabling dual buffering may provide a performance advantage
         setDoubleBuffered(false);
         //When listens a mouse click, store the start location and send it to the server
         addMouseListener(new MouseAdapter() {

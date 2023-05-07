@@ -148,104 +148,88 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
 
     public void initialize(ICanvasServer canvasServer) {
         JFrame frame = new JFrame("Login account: " + clientName);
-        frame.setTitle("Good Luck !");
-
+        frame.setTitle(clientName + " Good Luck !");
         Container content = frame.getContentPane();
 
+        // Create the canvas for drawing
         canvasWhiteboard = new CanvasWhiteboard(clientName, isManager, canvasServer);
 
-
-
+        //Set up the colour buttons
         blueBtn = new JButton();
         blueBtn.setBackground(Color.blue);
         blueBtn.setBorderPainted(false);
         blueBtn.setOpaque(true);
         blueBtn.addActionListener(actionListener);
-
         cyanBtn = new JButton();
         cyanBtn.setBackground(Color.cyan);
         cyanBtn.setBorderPainted(false);
         cyanBtn.setOpaque(true);
         cyanBtn.addActionListener(actionListener);
-
         magentaBtn = new JButton();
         magentaBtn.setBackground(Color.magenta);
         magentaBtn.setBorderPainted(false);
         magentaBtn.setOpaque(true);
         magentaBtn.addActionListener(actionListener);
-
         greenBtn = new JButton();
         greenBtn.setBackground(Color.green);
         greenBtn.setBorderPainted(false);
         greenBtn.setOpaque(true);
         greenBtn.addActionListener(actionListener);
-
         yellowBtn = new JButton();
         yellowBtn.setBackground(Color.yellow);
         yellowBtn.setBorderPainted(false);
         yellowBtn.setOpaque(true);
         yellowBtn.addActionListener(actionListener);
-
         orangeBtn = new JButton();
         orangeBtn.setBackground(Color.orange);
         orangeBtn.setBorderPainted(false);
         orangeBtn.setOpaque(true);
         orangeBtn.addActionListener(actionListener);
-
         pinkBtn = new JButton();
         pinkBtn.setBackground(Color.pink);
         pinkBtn.setBorderPainted(false);
         pinkBtn.setOpaque(true);
         pinkBtn.addActionListener(actionListener);
-
         redBtn = new JButton();
         redBtn.setBackground(Color.red);
         redBtn.setBorderPainted(false);
         redBtn.setOpaque(true);
         redBtn.addActionListener(actionListener);
-
         blackBtn = new JButton();
         blackBtn.setBackground(Color.black);
         blackBtn.setBorderPainted(false);
         blackBtn.setOpaque(true);
         blackBtn.addActionListener(actionListener);
-
         darkgreyBtn = new JButton();
         darkgreyBtn.setBackground(Color.darkGray);
         darkgreyBtn.setBorderPainted(false);
         darkgreyBtn.setOpaque(true);
         darkgreyBtn.addActionListener(actionListener);
-
         greyBtn = new JButton();
         greyBtn.setBackground(Color.gray);
         greyBtn.setBorderPainted(false);
         greyBtn.setOpaque(true);
         greyBtn.addActionListener(actionListener);
-
         lightGrayBtn = new JButton();
         lightGrayBtn.setBackground(Color.lightGray);
         lightGrayBtn.setBorderPainted(false);
         lightGrayBtn.setOpaque(true);
         lightGrayBtn.addActionListener(actionListener);
-
         whiteBtn = new JButton();
         whiteBtn.setBackground(Color.white);
         whiteBtn.setBorderPainted(false);
         whiteBtn.setOpaque(true);
         whiteBtn.addActionListener(actionListener);
-
         brownBtn = new JButton();
         brownBtn.setBackground(new Color(153,76,0));
         brownBtn.setBorderPainted(false);
         brownBtn.setOpaque(true);
         brownBtn.addActionListener(actionListener);
-
         purpleBtn = new JButton();
         purpleBtn.setBackground(new Color(128, 0, 128));
         purpleBtn.setBorderPainted(false);
         purpleBtn.setOpaque(true);
         purpleBtn.addActionListener(actionListener);
-
         darkBlueBtn = new JButton();
         darkBlueBtn.setBackground(new Color(0, 0, 139));
         darkBlueBtn.setBorderPainted(false);
@@ -358,13 +342,13 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         kickUserButton.setToolTipText("Kick out the selected user");
         kickUserButton.addActionListener(actionListener);
 
-        JList<String> list = new JList<>(clientList);
-        JScrollPane currUsers = new JScrollPane(list);
+        JList<String> clientJlist = new JList<>(clientList);
+        JScrollPane currUsers = new JScrollPane(clientJlist);
         currUsers.setMinimumSize(new Dimension(100, 150));
 
         // if the client is the manager, he can remove client
         if (isManager) {
-            list.addMouseListener(new MouseAdapter() {
+            clientJlist.addMouseListener(new MouseAdapter() {
                 public void mouseClicked(MouseEvent evt) {
                     @SuppressWarnings("unchecked")
                     JList<String> list = (JList<String>)evt.getSource();
@@ -402,6 +386,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         chatInputBox = new JList<>(chatList);
         msgArea = new JScrollPane(chatInputBox);
         msgArea.setMaximumSize(new Dimension(950, 300));
+        // Create a TextField for inputting text
         JTextField msgText = new JTextField();
         msgText.setMaximumSize(new Dimension(870, 140));
 
@@ -411,7 +396,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                 if(!msgText.getText().equals("")) {
                     try {
                         canvasServer.addChat(clientName + ": "+ msgText.getText());
-                        // let the scrollpane to always show the newest chat message
+                        // Set the scrollpane to show the updated chat message
                         SwingUtilities.invokeLater(() -> {
                             JScrollBar vertical = msgArea.getVerticalScrollBar();
                             vertical.setValue(vertical.getMaximum());
@@ -463,7 +448,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                 )
         );
 
-// The vertical layout
+        // The vertical layout
         layout.setVerticalGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(BASELINE)
                         .addGroup(layout.createSequentialGroup()
@@ -769,7 +754,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
 
     @Override
     public void shutDownUI() throws RemoteException {
-//if manager does not give permission
+        //if manager does not give permission
         if(!this.allowed) {
             Thread t = new Thread(new Runnable(){
                 public void run(){
