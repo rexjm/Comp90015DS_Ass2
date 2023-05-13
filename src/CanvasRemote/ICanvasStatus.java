@@ -14,5 +14,5 @@ public interface ICanvasStatus extends Remote {
 
     Object getState() throws RemoteException;
 
-    Object getMode();
+    Object getMode() throws RemoteException;
 }

@@ -50,9 +50,10 @@ public class CanvasWhiteboard extends JComponent {
                  startPt = e.getPoint();
                  saveCanvas();
                  try {
-                     ChatBox message = new ChatBox("start", clientName, mode, color, startPt, text);
-                     server.UpdateCanvas(message);
+                     CanvasStatus status = new CanvasStatus("start", clientName, mode, color, startPt, text);
+                     server.UpdateCanvas(status);
                  } catch (RemoteException ex) {
+                     ex.printStackTrace();
                      JOptionPane.showMessageDialog(null, "Canvas server is down.");
                  }
              }
@@ -69,7 +70,7 @@ public class CanvasWhiteboard extends JComponent {
                         shape = makeLine(shape, startPt, endPt);
                         startPt = endPt;
                         try {
-                            ChatBox item = new ChatBox("drawing", clientName, mode, color, endPt, "");
+                            CanvasStatus item = new CanvasStatus("drawing", clientName, mode, color, endPt, "");
                             server.UpdateCanvas(item);
                         } catch (RemoteException ex) {
                             JOptionPane.showMessageDialog(null, "Canvas server is down.");
@@ -80,7 +81,7 @@ public class CanvasWhiteboard extends JComponent {
                             graphics.setPaint (Color .white);
                             graphics.setStroke(new BasicStroke (15.0f));
                             try {
-                                ChatBox message = new ChatBox("drawing", clientName, mode, Color.white, endPt, "");
+                                CanvasStatus message = new CanvasStatus("drawing", clientName, mode, Color.white, endPt, "");
                                         server. UpdateCanvas(message);
                             } catch (RemoteException ex) {
                                     JOptionPane.showMessageDialog(null,"Canvas server is down.");
@@ -146,7 +147,7 @@ public class CanvasWhiteboard extends JComponent {
                    //eraser
                    if (mode.equals("eraser")) {
                        try {
-                           ChatBox message = new ChatBox("end", clientName, mode, Color.white, endPt, text);
+                           CanvasStatus message = new CanvasStatus("end", clientName, mode, Color.white, endPt, text);
                            server.UpdateCanvas(message);
                        } catch (RemoteException el) {
                            JOptionPane.showMessageDialog(null, "Canvas server is down.");
@@ -155,7 +156,7 @@ public class CanvasWhiteboard extends JComponent {
                        graphics.setStroke(new BasicStroke(1.0f));
                    } else {
                        try {
-                           ChatBox message = new ChatBox("end", clientName, mode, color, endPt, text);
+                           CanvasStatus message = new CanvasStatus("end", clientName, mode, color, endPt, text);
                            server.UpdateCanvas(message);
                        } catch (RemoteException e1) {
                            JOptionPane.showMessageDialog(null, "Canvas server is down.");

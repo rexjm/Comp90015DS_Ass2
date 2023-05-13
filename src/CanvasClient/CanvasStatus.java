@@ -6,7 +6,7 @@ import java.awt.*;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
-public class ChatBox extends UnicastRemoteObject implements ICanvasStatus {
+public class CanvasStatus extends UnicastRemoteObject implements ICanvasStatus {
     private static final long serialVersionUID = 1L;
     private String drawState;
     private String clientName;
@@ -14,9 +14,9 @@ public class ChatBox extends UnicastRemoteObject implements ICanvasStatus {
     private Color color;
     private Point point;
     private String text;
-    public ChatBox (String state, String nane, String mode, Color color, Point pt, String text) throws RemoteException {
+    public CanvasStatus (String state, String name, String mode, Color color, Point pt, String text) throws RemoteException {
         this.drawState = state;
-        this.clientName = nane;
+        this.clientName = name;
         this.mode = mode;
         this.color = color;
         this.point = pt;

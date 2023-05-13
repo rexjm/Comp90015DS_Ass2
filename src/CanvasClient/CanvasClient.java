@@ -148,7 +148,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
 
     public void initialize(ICanvasServer canvasServer) {
         JFrame frame = new JFrame("Login account: " + clientName);
-        frame.setTitle(clientName + " Good Luck !");
+        frame.setTitle(clientName + " Have fun !");
         Container content = frame.getContentPane();
 
         // Create the canvas for drawing
@@ -494,8 +494,9 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
 //        layout.linkSize(SwingConstants.HORIZONTAL, cleanButton, saveButton, saveAsButton, openButton);
 
         // set the minimum framesize
-        if (isManager) frame.setMinimumSize(new Dimension(1200, 800));
-        else frame.setMinimumSize(new Dimension(1200, 800));
+//        if (isManager) frame.setMinimumSize(new Dimension(1200, 800));
+//        else
+        frame.setMinimumSize(new Dimension(1200, 800));
 
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -605,22 +606,23 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         Shape shape = null;
 
         if (CanvasStatus.getState().equals("start")) {
-            //Let startPoint stores the start point of client x and wait for the next draw action
+            //Let hashmap startPoint stores the start point of a client and wait for the next draw action
             startPoints.put(CanvasStatus.getName(), CanvasStatus.getStartPoint());
             return;
         }
 
         //start from the start point of client x
-        Point startPt = (Point)startPoints.get(CanvasStatus.getName());
+        Point startPtName = (Point)startPoints.get(CanvasStatus.getName());
 
-        //set canvas stroke color
+        //set canvas painting color (Sets the Paint attribute for the Graphics2D context.)
         canvasWhiteboard.getGraphic().setPaint(CanvasStatus.getColor());
 
         if (CanvasStatus.getState().equals("drawing")) {
             if (CanvasStatus.getMode().equals("eraser")) {
+                // Constructs a solid BasicStroke with the specified line width and with default values for the cap
                 canvasWhiteboard.getGraphic().setStroke(new BasicStroke(15.0f));
             }
-            shape = makeLine(shape,startPt, CanvasStatus.getStartPoint());
+            shape = makeLine(shape,startPtName, CanvasStatus.getStartPoint());
             startPoints.put(CanvasStatus.getName(), CanvasStatus.getStartPoint());
             canvasWhiteboard.getGraphic().draw(shape);
             canvasWhiteboard.repaint();
@@ -630,15 +632,15 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         //the mouse is released, so we draw from start point to the broadcast point
         if (CanvasStatus.getState().equals("end")) {
             if (CanvasStatus.getMode().equals("draw") || CanvasStatus.getMode().equals("line")) {
-                shape = makeLine(shape,startPt, CanvasStatus.getStartPoint());
+                shape = makeLine(shape,startPtName, CanvasStatus.getStartPoint());
             } else if (CanvasStatus.getMode().equals("eraser")) {
                 canvasWhiteboard.getGraphic().setStroke(new BasicStroke(1.0f));
             } else if (CanvasStatus.getMode().equals("rect")) {
-                shape = makeRect(shape,startPt, CanvasStatus.getStartPoint());
+                shape = makeRect(shape,startPtName, CanvasStatus.getStartPoint());
             } else if (CanvasStatus.getMode().equals("circle")) {
-                shape = makeCircle(shape,startPt, CanvasStatus.getStartPoint());
+                shape = makeCircle(shape,startPtName, CanvasStatus.getStartPoint());
             }  else if (CanvasStatus.getMode().equals("oval")) {
-                shape = makeOval(shape,startPt, CanvasStatus.getStartPoint());
+                shape = makeOval(shape,startPtName, CanvasStatus.getStartPoint());
             } else if (CanvasStatus.getMode().equals("text")) {
                 canvasWhiteboard.getGraphic().setFont(new Font("TimesRoman", Font.PLAIN, 16));
                 canvasWhiteboard.getGraphic().drawString(CanvasStatus.getText(), CanvasStatus.getStartPoint().x, CanvasStatus.getStartPoint().y);
@@ -651,11 +653,12 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
 
                 }
             }
-            //
+            // If this component is a lightweight component, this method causes a call to
+            // this component's paint method as soon as possible.
             canvasWhiteboard.repaint();
             //once finished drawing remove the start point of client x
             startPoints.remove(CanvasStatus.getName());
-            return;
+//            return;
         }
         return;
     }
@@ -788,9 +791,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         if(args.length != 2) {
             throw new IllegalArgumentException("Need exactly two arguments.");
         }
-
         try {
-
             if(!(args[0].equals("localhost") || !args[0].equals("127.0.0.1"))) {
                 System.err.println("Please enter localhost or 127.0.0.1");
                 return;
