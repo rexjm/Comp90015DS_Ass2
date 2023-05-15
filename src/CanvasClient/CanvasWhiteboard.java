@@ -76,27 +76,30 @@ public class CanvasWhiteboard extends JComponent {
                             JOptionPane.showMessageDialog(null, "Canvas server is down.");
                         }
                     } else if (mode.equals("eraser")) {
-                            shape = makeLine(shape, startPt, endPt);
-                            startPt = endPt;
-                            graphics.setPaint (Color .white);
-                            graphics.setStroke(new BasicStroke (15.0f));
-                            try {
-                                CanvasStatus message = new CanvasStatus("drawing", clientName, mode, Color.white, endPt, "");
-                                        server. UpdateCanvas(message);
-                            } catch (RemoteException ex) {
-                                    JOptionPane.showMessageDialog(null,"Canvas server is down.");
-                            }
+                        shape = makeLine(shape, startPt, endPt);
+                        startPt = endPt;
+                        graphics.setPaint(Color.white);
+                        graphics.setStroke(new BasicStroke(15.0f));
+                        try {
+                            CanvasStatus message = new CanvasStatus("drawing", clientName, mode, Color.white, endPt, "");
+                            server.UpdateCanvas(message);
+                        } catch (RemoteException ex) {
+                            JOptionPane.showMessageDialog(null, "Canvas server is down.");
+                        }
                     } else if (mode.equals("line")) {
-                    //when drawing, draw the previous image then add to it
+                        //when drawing, draw the previous image then add to it
                         drawPreviousCanvas();
                         shape = makeLine(shape, startPt, endPt);
                     } else if (mode.equals("rect")) {
-                        drawPreviousCanvas ();
+                        drawPreviousCanvas();
                         shape = makeRect(shape, startPt, endPt);
                     } else if (mode.equals("circle")) {
                         drawPreviousCanvas();
                         shape = makeCircle(shape, startPt, endPt);
-                    } else if (mode.equals("text")) {
+                    } else if (mode.equals("oval")) {
+                        drawPreviousCanvas();
+                        shape = makeOval(shape, startPt, endPt);
+                    }else if (mode.equals("text")) {
                         drawPreviousCanvas();
                         graphics.setFont (new Font ("TimesRoman", Font.PLAIN, 20));
                         graphics.drawString("Enter text here", endPt.x, endPt.y) ;
@@ -125,7 +128,9 @@ public class CanvasWhiteboard extends JComponent {
                        shape = makeRect(shape, startPt, endPt);
                    } else if (mode.equals("circle")) {
                        shape = makeCircle(shape, startPt, endPt);
-                   } else if (mode.equals("text")) {
+                   } else if (mode.equals("oval")){
+                       shape = makeOval(shape, startPt, endPt);
+                   }else if (mode.equals("text")) {
                        text = JOptionPane.showInputDialog("What text you want to add?");
                        if (text == null) {
                            text = "";
@@ -166,6 +171,9 @@ public class CanvasWhiteboard extends JComponent {
            }
        });
    }
+
+
+
     //The method for painting the shape on the white board.
     // initialize the white board to synchronize with the manager's image when the client join the shared white board
     protected void paintComponent (Graphics g) {
@@ -303,10 +311,9 @@ public class CanvasWhiteboard extends JComponent {
     public void setOvalMode() {
         mode = "oval";
     }
-    public void triangle() {
-        mode = "triangle";
-    }
-    public void text() {
+
+
+    public void setTextMode() {
         mode = "text";
     }
 
@@ -336,6 +343,15 @@ public class CanvasWhiteboard extends JComponent {
         shape = new Ellipse2D.Double(x, y, Math.max(width, height), Math.max(width, height));
         return shape;
     }
+    //draw oval
+    private Shape makeOval(Shape shape, Point startPt, Point endPt) {
+        int x = Math.min(startPt.x, endPt.x);
+        int y = Math.min(startPt.y, endPt.y);
+        int width = Math.abs(startPt.x - endPt.x);
+        int height = Math.abs(startPt.y - endPt.y);
+        shape = new Ellipse2D.Double(x, y, width, height);
+        return shape;
+    }
     //Make text
     public Shape makeText (Shape shape, Point start) {
         int x = start.x - 5;
@@ -351,5 +367,7 @@ public class CanvasWhiteboard extends JComponent {
 
     public void cleanAll() {
     }
+
+
 }
 

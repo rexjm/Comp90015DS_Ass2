@@ -55,6 +55,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
     private boolean allowed;
 
     private Hashtable<String, Point> startPoints = new Hashtable<String, Point>();
+    private JButton[] leftToolButtons;
 
 
     protected CanvasClient() throws RemoteException {
@@ -67,10 +68,16 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
     ActionListener actionListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            LineBorder noChosen = new LineBorder(new Color(238, 238, 238), 1);
+            LineBorder noBorder = new LineBorder(new Color(238, 238, 238), 1);
             LineBorder border = new LineBorder(Color.BLUE, 2);
 
             Object source = e.getSource();
+            // if a new button is pressed, clean the border of the previous one
+            for (JButton button : leftToolButtons) {
+                if (button != source) {
+                    button.setBorder(noBorder);
+                }
+            }
             if (source.equals(newButton)) {
                 if (isManager) {
                     canvasWhiteboard.cleanAll();
@@ -98,6 +105,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
             } else if (source.equals(lineButton)) {
                 canvasWhiteboard.setLineMode();
                 lineButton.setBorder(border);
+
             } else if (source.equals(circleButton)) {
                 canvasWhiteboard.setCircleMode();
                 circleButton.setBorder(border);
@@ -109,7 +117,10 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                 eraserButton.setBorder(border);
             } else if (source.equals(rectangleButton)) {
                 canvasWhiteboard.setRectMode();
-                eraserButton.setBorder(border);
+                rectangleButton.setBorder(border);
+            } else if (source.equals(textButton)) {
+                canvasWhiteboard.setTextMode();
+                textButton.setBorder(border);
             }
         }
     };
@@ -328,6 +339,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         eraserButton.setToolTipText("Eraser");
         eraserButton.setBorder(border);
         eraserButton.addActionListener(actionListener);
+        this.leftToolButtons = new JButton[]{lineButton, circleButton, ovalButton, rectangleButton, textButton, eraserButton};
 
         newButton = new JButton("New Board");
         newButton.setToolTipText("Create a new board");
