@@ -47,15 +47,15 @@ public class CanvasWhiteboard extends JComponent {
         addMouseListener(new MouseAdapter() {
              public void mousePressed(MouseEvent e) {
 
-                 startPt = e.getPoint();
-                 saveCanvas();
-                 try {
-                     CanvasStatus status = new CanvasStatus("start", clientName, mode, color, startPt, text);
-                     server.UpdateCanvas(status);
-                 } catch (RemoteException ex) {
-                     ex.printStackTrace();
-                     JOptionPane.showMessageDialog(null, "Canvas server is down.");
-                 }
+             startPt = e.getPoint();
+             saveCanvas();
+             try {
+                 CanvasStatus status = new CanvasStatus("start", clientName, mode, color, startPt, text);
+                 server.UpdateCanvas(status);
+             } catch (RemoteException ex) {
+                 ex.printStackTrace();
+                 JOptionPane.showMessageDialog(null, "Canvas server is down.");
+             }
              }
          });
         //Listen to the action on the canvas, draw the shape on local client, then send the shape to server
@@ -92,7 +92,7 @@ public class CanvasWhiteboard extends JComponent {
                         shape = makeLine(shape, startPt, endPt);
                     } else if (mode.equals("rect")) {
                         drawPreviousCanvas ();
-                        shape = makeRect (shape, startPt, endPt);
+                        shape = makeRect(shape, startPt, endPt);
                     } else if (mode.equals("circle")) {
                         drawPreviousCanvas();
                         shape = makeCircle(shape, startPt, endPt);
@@ -198,15 +198,15 @@ public class CanvasWhiteboard extends JComponent {
     public Graphics2D getGraphic() {
         return graphics;
     }
-        public BufferedImage getCanvas () {
-            saveCanvas() ;
-            return previousCanvas;
-        }
-        public void reset(){
-        graphics.setPaint (Color.white);
-        graphics. fillRect(0, 0, 950, 550);
-        graphics.setPaint (color);
-        repaint();
+    public BufferedImage getCanvas () {
+        saveCanvas() ;
+        return previousCanvas;
+    }
+    public void reset(){
+    graphics.setPaint (Color.white);
+    graphics. fillRect(0, 0, 950, 550);
+    graphics.setPaint (color);
+    repaint();
     }
 
     //save the image
@@ -291,16 +291,16 @@ public class CanvasWhiteboard extends JComponent {
     public void draw() {
         mode = "draw";
     }
-    public void line() {
+    public void setLineMode() {
         mode = "line";
     }
-    public void rect() {
+    public void setRectMode() {
         mode = "rect";
     }
-    public void circle() {
+    public void setCircleMode() {
         mode = "circle";
     }
-    public void oval() {
+    public void setOvalMode() {
         mode = "oval";
     }
     public void triangle() {
@@ -310,7 +310,7 @@ public class CanvasWhiteboard extends JComponent {
         mode = "text";
     }
 
-    public void eraser() {
+    public void setEraserMode() {
         mode = "eraser";
     }
     // draw line or wiggles
@@ -324,7 +324,7 @@ public class CanvasWhiteboard extends JComponent {
         int y= Math.min(start.y, end.y) ;
         int width = Math.abs (start.x - end.x);
         int height = Math.abs(start.y - end.y);
-        shape = new Rectangle2D. Double(x, y, width, height);
+        shape = new Rectangle2D.Double(x, y, width, height);
         return shape;
     }
     //draw circle

@@ -68,7 +68,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         @Override
         public void actionPerformed(ActionEvent e) {
             LineBorder noChosen = new LineBorder(new Color(238, 238, 238), 1);
-            LineBorder chosen = new LineBorder(Color.BLUE, 1);
+            LineBorder border = new LineBorder(Color.BLUE, 2);
 
             Object source = e.getSource();
             if (source.equals(newButton)) {
@@ -96,17 +96,20 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
             }else if (source.equals(kickUserButton)) {
 
             } else if (source.equals(lineButton)) {
-                canvasWhiteboard.line();
-                lineButton.setBorder(chosen);
+                canvasWhiteboard.setLineMode();
+                lineButton.setBorder(border);
             } else if (source.equals(circleButton)) {
-                canvasWhiteboard.circle();
-                circleButton.setBorder(chosen);
+                canvasWhiteboard.setCircleMode();
+                circleButton.setBorder(border);
             } else if (source.equals(ovalButton)) {
-                canvasWhiteboard.oval();
-                ovalButton.setBorder(chosen);
+                canvasWhiteboard.setOvalMode();
+                ovalButton.setBorder(border);
             }  else if (source.equals(eraserButton)) {
-                canvasWhiteboard.eraser();
-                eraserButton.setBorder(chosen);
+                canvasWhiteboard.setEraserMode();
+                eraserButton.setBorder(border);
+            } else if (source.equals(rectangleButton)) {
+                canvasWhiteboard.setRectMode();
+                eraserButton.setBorder(border);
             }
         }
     };
@@ -575,14 +578,15 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
     }
 
     //draw oval
-    public Shape makeOval(Shape shape,Point start, Point end) {
-//        int x = Math.min(start.x, end.x);
-//        int y= Math.min(start.y, end.y);
-//        int width = Math.abs(start.x - end.x);
-//        int height = Math.abs(start.y - end.y);
-//        shape = new Ellipse2D.Double(x, y, Math.max(width, height), Math.max(width, height));
+    public Shape makeOval(Shape shape, Point start, Point end) {
+        int x = Math.min(start.x, end.x);
+        int y = Math.min(start.y, end.y);
+        int width = Math.abs(start.x - end.x);
+        int height = Math.abs(start.y - end.y);
+        shape = new Ellipse2D.Double(x, y, width, height);
         return shape;
     }
+
 
     //Make text
     public Shape makeText(Shape shape,Point start) {
@@ -620,7 +624,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         if (CanvasStatus.getState().equals("drawing")) {
             if (CanvasStatus.getMode().equals("eraser")) {
                 // Constructs a solid BasicStroke with the specified line width and with default values for the cap
-                canvasWhiteboard.getGraphic().setStroke(new BasicStroke(15.0f));
+                canvasWhiteboard.getGraphic().setStroke(new BasicStroke(15.0f));// The width
             }
             shape = makeLine(shape,startPtName, CanvasStatus.getStartPoint());
             startPoints.put(CanvasStatus.getName(), CanvasStatus.getStartPoint());
@@ -642,7 +646,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
             }  else if (CanvasStatus.getMode().equals("oval")) {
                 shape = makeOval(shape,startPtName, CanvasStatus.getStartPoint());
             } else if (CanvasStatus.getMode().equals("text")) {
-                canvasWhiteboard.getGraphic().setFont(new Font("TimesRoman", Font.PLAIN, 16));
+                canvasWhiteboard.getGraphic().setFont(new Font("TimesRoman", Font.PLAIN, 24));
                 canvasWhiteboard.getGraphic().drawString(CanvasStatus.getText(), CanvasStatus.getStartPoint().x, CanvasStatus.getStartPoint().y);
             }
             //draw shape if in shape mode: triangle, circle, rectangle
