@@ -45,7 +45,8 @@ public interface ICanvasServer extends Remote, Serializable {
     void openNewImage(byte[] image) throws IOException;
 
     // update the chat box when a new user join
-    void updateChatBox(String chatMsg) throws RemoteException;
+
+    void updateServerChatBox(String chatMsg) throws RemoteException;
 
     // when the manager quits, application terminate
     void terminateApp() throws IOException;

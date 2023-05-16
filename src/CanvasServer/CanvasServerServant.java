@@ -16,12 +16,10 @@ import java.util.Set;
  * Represents the remote object (skeleton) of Server then implements the remote interface.
  */
 public class CanvasServerServant extends UnicastRemoteObject implements ICanvasServer {
-//    private CanvasManager canvasManager;
     private Set<ICanvasClient> clientSet;
     private ICanvasClient manager;
 
     protected CanvasServerServant() throws RemoteException {
-//        this.canvasManager = new CanvasManager(this);
         this.clientSet = new HashSet<ICanvasClient>();
     }
 
@@ -163,7 +161,7 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
     }
 
     @Override
-    public void updateChatBox(String chatMsg) throws RemoteException {
+    public void updateServerChatBox(String chatMsg) throws RemoteException {
         for (ICanvasClient client : clientSet) {
             try {
                 client.updateChatBox(chatMsg);

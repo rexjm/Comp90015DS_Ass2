@@ -47,15 +47,15 @@ public class CanvasWhiteboard extends JComponent {
         addMouseListener(new MouseAdapter() {
              public void mousePressed(MouseEvent e) {
 
-             startPt = e.getPoint();
-             saveCanvas();
-             try {
-                 CanvasStatus status = new CanvasStatus("start", clientName, mode, color, startPt, text);
-                 server.UpdateCanvas(status);
-             } catch (RemoteException ex) {
-                 ex.printStackTrace();
-                 JOptionPane.showMessageDialog(null, "Canvas server is down.");
-             }
+                 startPt = e.getPoint();
+                 saveCanvas();
+                 try {
+                     CanvasStatus status = new CanvasStatus("start", clientName, mode, color, startPt, text);
+                     server.UpdateCanvas(status);
+                 } catch (RemoteException ex) {
+                     ex.printStackTrace();
+                     JOptionPane.showMessageDialog(null, "Canvas server is down.");
+                 }
              }
          });
         //Listen to the action on the canvas, draw the shape on local client, then send the shape to server
@@ -242,68 +242,68 @@ public class CanvasWhiteboard extends JComponent {
         graphics.drawImage(img, null, 0, 0);
         repaint();
     }
-    public void brown() {
-        this.color = new Color(153, 76, 0);
+    public void setBlue() {
+        this.color = Color.blue;
         graphics.setPaint(color);
     }
-    public void red() {
-        this.color = Color.red;
+    public void setCyan() {
+        this.color = Color.cyan;
         graphics.setPaint (color);
     }
-    public void pink() {
-        this. color = new Color (255, 153,204);
+    public void setMagenta() {
+        this. color = Color.magenta;
         graphics.setPaint (color);
     }
-    public void black() {
-        color = Color.black;
-        graphics.setPaint(color);
-    }
-    public void green() {
+    public void setGreen() {
         color = Color.green;
         graphics.setPaint(color);
     }
-    public void blue() {
-        color = Color.blue;
-        graphics.setPaint(color);
-    }
-    public void orange () {
-        color = Color.orange;
-        graphics.setPaint (color);
-    }
-    public void grey() {
-        color = Color.gray;
-        graphics.setPaint(color);
-    }
-    public void purple() {
-        color = new Color (102, 0, 204);
-        graphics.setPaint(color);
-    }
-    public void lime() {
-        color = new Color(102, 102, 0);
-        graphics.setPaint(color);
-    }
-    public void darkgrey() {
-        color = Color.darkGray;
-        graphics.setPaint (color);
-    }
-    public void magenta() {
-        color = Color .magenta;
-        graphics.setPaint (color);
-    }
-    public void a01() {
-        color = new Color (0, 102, 102);
-        graphics.setPaint (color);
-    }
-    public void sky() {
-        color = new Color(0, 128, 255);
-        graphics.setPaint(color);
-    }
-    public void yellow() {
+    public void setYellow() {
         color = Color.yellow;
         graphics.setPaint(color);
     }
-    public void cyan() {
-        color = Color.cyan;
+    public void setOrange() {
+        color = Color.orange;
+        graphics.setPaint(color);
+    }
+    public void setPink () {
+        color = Color.pink;
+        graphics.setPaint (color);
+    }
+    public void setRed() {
+        color = Color.red;
+        graphics.setPaint(color);
+    }
+    public void setBlack() {
+        color = Color.black;
+        graphics.setPaint(color);
+    }
+    public void setDarkGray() {
+        color = Color.darkGray;
+        graphics.setPaint(color);
+    }
+    public void setWhite() {
+        color = Color.white;
+        graphics.setPaint (color);
+    }
+    public void setGray() {
+        color = Color.gray;
+        graphics.setPaint (color);
+    }
+    public void setLightGray() {
+        color = Color.lightGray;
+        graphics.setPaint (color);
+    }
+    public void setBrown() {
+        color = new Color(153,76,0);
+        graphics.setPaint(color);
+    }
+    public void setPurple() {
+        color = new Color(128, 0, 128);
+        graphics.setPaint(color);
+    }
+    public void setDarkBlue() {
+        color = new Color(0, 0, 139);
         graphics.setPaint(color);
     }
     public void draw() {
@@ -409,6 +409,7 @@ public class CanvasWhiteboard extends JComponent {
     }
 
     public void cleanAll() {
+       reset();
     }
 
 

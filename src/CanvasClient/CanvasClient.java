@@ -68,8 +68,8 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
     ActionListener actionListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
-            LineBorder noBorder = new LineBorder(new Color(238, 238, 238), 1);
-            LineBorder border = new LineBorder(Color.BLUE, 2);
+            LineBorder noBorder = new LineBorder(Color.white, 0);
+            LineBorder border = new LineBorder(Color.ORANGE, 2);
 
             Object source = e.getSource();
             // if a new button is pressed, clean the border of the previous one
@@ -78,6 +78,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                     button.setBorder(noBorder);
                 }
             }
+
             if (source.equals(newButton)) {
                 if (isManager) {
                     canvasWhiteboard.cleanAll();
@@ -105,7 +106,6 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
             } else if (source.equals(lineButton)) {
                 canvasWhiteboard.setLineMode();
                 lineButton.setBorder(border);
-
             } else if (source.equals(circleButton)) {
                 canvasWhiteboard.setCircleMode();
                 circleButton.setBorder(border);
@@ -124,6 +124,40 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
             } else if (source.equals(textButton)) {
                 canvasWhiteboard.setTextMode();
                 textButton.setBorder(border);
+            }
+
+            else if (source.equals(blueBtn)) {
+                canvasWhiteboard.setBlue();
+            } else if (source.equals(cyanBtn)) {
+                canvasWhiteboard.setCyan();
+            }else if (source.equals(magentaBtn)) {
+                canvasWhiteboard.setMagenta();
+            }else if (source.equals(greenBtn)) {
+                canvasWhiteboard.setGreen();
+            }else if (source.equals(yellowBtn)) {
+                canvasWhiteboard.setYellow();
+            }else if (source.equals(orangeBtn)) {
+                canvasWhiteboard.setOrange();
+            }else if (source.equals(pinkBtn)) {
+                canvasWhiteboard.setPink();
+            }else if (source.equals(redBtn)) {
+                canvasWhiteboard.setRed();
+            }else if (source.equals(blackBtn)) {
+                canvasWhiteboard.setBlack();
+            }else if (source.equals(darkgreyBtn)) {
+                canvasWhiteboard.setDarkGray();
+            }else if (source.equals(greyBtn)) {
+                canvasWhiteboard.setGray();
+            }else if (source.equals(lightGrayBtn)) {
+                canvasWhiteboard.setLightGray();
+            }else if (source.equals(whiteBtn)) {
+                canvasWhiteboard.setWhite();
+            }else if (source.equals(brownBtn)) {
+                canvasWhiteboard.setBrown();
+            }else if (source.equals(purpleBtn)) {
+                canvasWhiteboard.setPurple();
+            }else if (source.equals(darkBlueBtn)) {
+                canvasWhiteboard.setDarkBlue();
             }
         }
     };
@@ -345,13 +379,13 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         this.leftToolButtons = new JButton[]{lineButton, circleButton, ovalButton, rectangleButton, textButton
                 , eraserButton, starButton};
 
-        newButton = new JButton("New Board");
+        newButton = new JButton("New");
         newButton.setToolTipText("Create a new board");
         newButton.addActionListener(actionListener);
-        openButton = new JButton("Open Image");
+        openButton = new JButton("Open");
         openButton.setToolTipText("Open an image file");
         openButton.addActionListener(actionListener);
-        saveButton = new JButton("Save Image");
+        saveButton = new JButton("Save");
         saveButton.setToolTipText("Save as image file");
         saveButton.addActionListener(actionListener);
         saveAsButton = new JButton("Save as");
@@ -406,15 +440,19 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         msgArea = new JScrollPane(chatInputBox);
         msgArea.setMaximumSize(new Dimension(950, 300));
         // Create a TextField for inputting text
-        JTextField msgText = new JTextField();
-        msgText.setMaximumSize(new Dimension(870, 140));
+        JTextField inputArea = new JTextField();
+        inputArea.setMaximumSize(new Dimension(870, 140));
 
-        JButton sendBtn = new JButton("Send"); //addMouseListener here 直接call server 去broadcast message
+        JButton sendBtn = new JButton("Send"); //addMouseListener here, Directly call the server to broadcast message
+
         sendBtn.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
-                if(!msgText.getText().equals("")) {
+                if(!inputArea.getText().equals("")) {
                     try {
-                        canvasServer.addChat(clientName + ": "+ msgText.getText());
+                        String newMessage = clientName + ": " + inputArea.getText();
+                        canvasServer.addChat(newMessage);
+                        // Add new message to chatList
+                        chatList.addElement(newMessage);
                         // Set the scrollpane to show the updated chat message
                         SwingUtilities.invokeLater(() -> {
                             JScrollBar vertical = msgArea.getVerticalScrollBar();
@@ -424,7 +462,11 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                         // TODO Auto-generated catch block
                         JOptionPane.showMessageDialog(null, "WhiteBoard server is down, please save and exit.");
                     }
-                    msgText.setText("");
+                    // Clear the dialog box after sending it
+                    inputArea.setText("");
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please input a message!");
+
                 }
             }
         });
@@ -451,6 +493,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                 )
                 .addGroup(layout.createParallelGroup()
                         .addGroup(layout.createSequentialGroup()
+                                .addComponent(newButton)
                                 .addComponent(openButton)
                                 .addComponent(saveButton)
                                 .addComponent(saveAsButton)
@@ -460,7 +503,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                                 .addComponent(canvasWhiteboard)
                                 .addComponent(msgArea)
                                 .addGroup(layout.createSequentialGroup()
-                                        .addComponent(msgText)
+                                        .addComponent(inputArea)
                                         .addComponent(sendBtn)
                                 )
                         )
@@ -475,6 +518,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                         )
                         .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+                                        .addComponent(newButton)
                                         .addComponent(openButton)
                                         .addComponent(saveButton)
                                         .addComponent(saveAsButton)
@@ -503,7 +547,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                         .addGroup(layout.createSequentialGroup()
                                 .addComponent(msgArea)
                                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-                                        .addComponent(msgText)
+                                        .addComponent(inputArea)
                                         .addComponent(sendBtn)
                                 )
                         )
@@ -648,7 +692,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
 
     @Override
     public void updateCanvas(ICanvasStatus CanvasStatus) throws RemoteException {
-        // skip msg from itself
+        // skip status from himself
         if (CanvasStatus.getName().compareTo(clientName) == 0) {
             return;
         }
@@ -856,7 +900,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
             ICanvasServer canvasServer = (ICanvasServer) Naming.lookup(serverAddress);
             System.out.println("Connected to the server!");
             ICanvasClient client =  new CanvasClient();
-            //show user register GUI and register the user name to server
+            //show user register GUI and register the username to server
             boolean validName = false;
             String client_name = "";
             while(!validName) {
