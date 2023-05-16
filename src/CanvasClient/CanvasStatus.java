@@ -29,7 +29,7 @@ public class CanvasStatus extends UnicastRemoteObject implements ICanvasStatus {
     }
 
     @Override
-    public Point getStartPoint() throws RemoteException {
+    public Point getEndPoint() throws RemoteException {
         return this.point;
     }
 

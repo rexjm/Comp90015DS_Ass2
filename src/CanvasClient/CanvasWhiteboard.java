@@ -79,7 +79,7 @@ public class CanvasWhiteboard extends JComponent {
                         shape = makeLine(shape, startPt, endPt);
                         startPt = endPt;
                         graphics.setPaint(Color.white);
-                        graphics.setStroke(new BasicStroke(15.0f));
+                        graphics.setStroke(new BasicStroke(30.0f));
                         try {
                             CanvasStatus message = new CanvasStatus("drawing", clientName, mode, Color.white, endPt, "");
                             server.UpdateCanvas(message);
@@ -99,7 +99,10 @@ public class CanvasWhiteboard extends JComponent {
                     } else if (mode.equals("oval")) {
                         drawPreviousCanvas();
                         shape = makeOval(shape, startPt, endPt);
-                    }else if (mode.equals("text")) {
+                    } else if (mode.equals("star")) {
+                        drawPreviousCanvas();
+                        shape = makeStar(shape, startPt, calculateDistance(startPt, endPt));
+                    } else if (mode.equals("text")) {
                         drawPreviousCanvas();
                         graphics.setFont (new Font ("TimesRoman", Font.PLAIN, 20));
                         graphics.drawString("Enter text here", endPt.x, endPt.y) ;
@@ -128,8 +131,10 @@ public class CanvasWhiteboard extends JComponent {
                        shape = makeRect(shape, startPt, endPt);
                    } else if (mode.equals("circle")) {
                        shape = makeCircle(shape, startPt, endPt);
-                   } else if (mode.equals("oval")){
+                   } else if (mode.equals("oval")) {
                        shape = makeOval(shape, startPt, endPt);
+                   } else if (mode.equals("star")) {
+                       shape = makeStar(shape, startPt, calculateDistance(startPt,endPt));
                    }else if (mode.equals("text")) {
                        text = JOptionPane.showInputDialog("What text you want to add?");
                        if (text == null) {
@@ -138,7 +143,7 @@ public class CanvasWhiteboard extends JComponent {
                        drawPreviousCanvas();
                        graphics.setFont(new Font("TimesRoman", Font.PLAIN, 20));
                        graphics.drawString(text, endPt.x, endPt.y);
-                       graphics.setStroke(new BasicStroke(1.0f));
+                       graphics.setStroke(new BasicStroke(1.8f));
                    }
                    // if in shape modes
                    if (!mode.equals("text")) {
@@ -172,7 +177,12 @@ public class CanvasWhiteboard extends JComponent {
        });
    }
 
+    public int calculateDistance(Point startPt, Point endPt) {
+        int xDifference = endPt.x - startPt.x;
+        int yDifference = endPt.y - startPt.y;
 
+        return (int) Math.sqrt(xDifference * xDifference + yDifference * yDifference);
+    }
 
     //The method for painting the shape on the white board.
     // initialize the white board to synchronize with the manager's image when the client join the shared white board
@@ -312,6 +322,9 @@ public class CanvasWhiteboard extends JComponent {
         mode = "oval";
     }
 
+    public void setStarMode() {
+       mode = "star";
+    }
 
     public void setTextMode() {
         mode = "text";
@@ -343,8 +356,38 @@ public class CanvasWhiteboard extends JComponent {
         shape = new Ellipse2D.Double(x, y, Math.max(width, height), Math.max(width, height));
         return shape;
     }
+    //draw star
+    public Shape makeStar(Shape shape, Point center, int radius) {
+        // The number of points of the star
+        int numPoints = 5;
+
+        // The angle between each point in radians
+        double angle = Math.PI * 2 / numPoints;
+
+        // The coordinates of the points
+        int[] xPoints = new int[numPoints];
+        int[] yPoints = new int[numPoints];
+
+        // Calculate the coordinates of each point
+        for (int i = 0; i < numPoints; i++) {
+            xPoints[i] = center.x + (int) (Math.sin(i * angle) * radius);
+            yPoints[i] = center.y - (int) (Math.cos(i * angle) * radius);
+        }
+
+        // Connect every second point
+        int[] xStarPoints = new int[numPoints];
+        int[] yStarPoints = new int[numPoints];
+        for (int i = 0; i < numPoints; i++) {
+            xStarPoints[i] = xPoints[(2 * i) % numPoints];
+            yStarPoints[i] = yPoints[(2 * i) % numPoints];
+        }
+
+        shape = new Polygon(xStarPoints, yStarPoints, numPoints);
+        return shape;
+    }
+
     //draw oval
-    private Shape makeOval(Shape shape, Point startPt, Point endPt) {
+    public Shape makeOval(Shape shape, Point startPt, Point endPt) {
         int x = Math.min(startPt.x, endPt.x);
         int y = Math.min(startPt.y, endPt.y);
         int width = Math.abs(startPt.x - endPt.x);
@@ -367,6 +410,7 @@ public class CanvasWhiteboard extends JComponent {
 
     public void cleanAll() {
     }
+
 
 
 }

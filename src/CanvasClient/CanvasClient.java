@@ -43,7 +43,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
     private CanvasWhiteboard canvasWhiteboard;
     private JScrollPane msgArea;
     private JList<String> chatInputBox;
-    private JButton cleanButton, lineButton, circleButton, ovalButton, rectangleButton,textButton, eraserButton;
+    private JButton starButton, lineButton, circleButton, ovalButton, rectangleButton,textButton, eraserButton;
     private JButton newButton, openButton, saveButton, saveAsButton,kickUserButton;
     private JButton orangeBtn, yellowBtn, cyanBtn, blackBtn, brownBtn, pinkBtn, greyBtn, blueBtn, greenBtn, redBtn;
     private JButton purpleBtn, darkBlueBtn, darkgreyBtn, magentaBtn,  lightGrayBtn, whiteBtn;
@@ -54,7 +54,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
     private boolean isManager;
     private boolean allowed;
 
-    private Hashtable<String, Point> startPoints = new Hashtable<String, Point>();
+    private Hashtable<String, Point> endPoints = new Hashtable<String, Point>();
     private JButton[] leftToolButtons;
 
 
@@ -100,7 +100,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                 } catch (IOException ex) {
                     System.out.println(ex);
                 }
-            }else if (source.equals(kickUserButton)) {
+            } else if (source.equals(kickUserButton)) {
 
             } else if (source.equals(lineButton)) {
                 canvasWhiteboard.setLineMode();
@@ -112,7 +112,10 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
             } else if (source.equals(ovalButton)) {
                 canvasWhiteboard.setOvalMode();
                 ovalButton.setBorder(border);
-            }  else if (source.equals(eraserButton)) {
+            } else if (source.equals(starButton)) {
+                canvasWhiteboard.setStarMode();
+                starButton.setBorder(border);
+            }else if (source.equals(eraserButton)) {
                 canvasWhiteboard.setEraserMode();
                 eraserButton.setBorder(border);
             } else if (source.equals(rectangleButton)) {
@@ -297,12 +300,12 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
 //        drawBtn.addActionListener(actionListener);
         border = new LineBorder(new Color(238,238,238), 2);
 
-        ImageIcon cleanIcon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/clean.png");
-        cleanButton = new JButton(cleanIcon);
-        cleanButton.setIcon(resizeIcon(cleanIcon, 60, 60));
-        cleanButton.setToolTipText("CLean the whiteboard");
-        cleanButton.setBorder(border);
-        cleanButton.addActionListener(actionListener);
+        ImageIcon starIcon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/star.png");
+        starButton = new JButton(starIcon);
+        starButton.setIcon(resizeIcon(starIcon, 60, 60));
+        starButton.setToolTipText("Draw a star");
+        starButton.setBorder(border);
+        starButton.addActionListener(actionListener);
         ImageIcon lineIcon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/line.png");
         lineButton = new JButton(lineIcon);
         lineButton.setIcon(resizeIcon(lineIcon, 60, 60));
@@ -339,7 +342,8 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         eraserButton.setToolTipText("Eraser");
         eraserButton.setBorder(border);
         eraserButton.addActionListener(actionListener);
-        this.leftToolButtons = new JButton[]{lineButton, circleButton, ovalButton, rectangleButton, textButton, eraserButton};
+        this.leftToolButtons = new JButton[]{lineButton, circleButton, ovalButton, rectangleButton, textButton
+                , eraserButton, starButton};
 
         newButton = new JButton("New Board");
         newButton.setToolTipText("Create a new board");
@@ -439,9 +443,9 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                         .addComponent(rectangleButton)
                         .addComponent(circleButton)
                         .addComponent(ovalButton)
+                        .addComponent(starButton)
                         .addComponent(textButton)
                         .addComponent(eraserButton)
-                        .addComponent(cleanButton)
                         .addComponent(currUsers)
                         .addComponent(kickUserButton)
                 )
@@ -483,9 +487,9 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                                 .addComponent(rectangleButton)
                                 .addComponent(circleButton)
                                 .addComponent(ovalButton)
+                                .addComponent(starButton)
                                 .addComponent(textButton)
                                 .addComponent(eraserButton)
-                                .addComponent(cleanButton)
                         )
                         .addGroup(layout.createSequentialGroup()
                                 .addComponent(canvasWhiteboard)
@@ -564,51 +568,80 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
     }
 
 
-    public Shape makeLine(Shape shape,Point start, Point end) {
-        shape = new Line2D.Double(start.x, start.y, end.x, end.y);
-        return shape;
-    }
+//    public Shape makeLine(Shape shape,Point start, Point end) {
+//        shape = new Line2D.Double(start.x, start.y, end.x, end.y);
+//        return shape;
+//    }
+//
+//    //draw Rectangle
+//    public Shape makeRect(Shape shape,Point start, Point end) {
+//        int x = Math.min(start.x, end.x);
+//        int y= Math.min(start.y, end.y);
+//        int width = Math.abs(start.x - end.x);
+//        int height = Math.abs(start.y - end.y);
+//        shape = new Rectangle2D.Double(x, y, width, height);
+//        return shape;
+//    }
+//
+//    //draw circle
+//    public Shape makeCircle(Shape shape,Point start, Point end) {
+//        int x = Math.min(start.x, end.x);
+//        int y= Math.min(start.y, end.y);
+//        int width = Math.abs(start.x - end.x);
+//        int height = Math.abs(start.y - end.y);
+//        shape = new Ellipse2D.Double(x, y, Math.max(width, height), Math.max(width, height));
+//        return shape;
+//    }
+//
+//    //draw oval
+//    public Shape makeOval(Shape shape, Point start, Point end) {
+//        int x = Math.min(start.x, end.x);
+//        int y = Math.min(start.y, end.y);
+//        int width = Math.abs(start.x - end.x);
+//        int height = Math.abs(start.y - end.y);
+//        shape = new Ellipse2D.Double(x, y, width, height);
+//        return shape;
+//    }
 
-    //draw Rectangle
-    public Shape makeRect(Shape shape,Point start, Point end) {
-        int x = Math.min(start.x, end.x);
-        int y= Math.min(start.y, end.y);
-        int width = Math.abs(start.x - end.x);
-        int height = Math.abs(start.y - end.y);
-        shape = new Rectangle2D.Double(x, y, width, height);
-        return shape;
-    }
+//    private Shape makeStar(Shape shape, Point center, int radius) {
+//        // The number of points of the star
+//        int numPoints = 5;
+//
+//        // The angle between each point in radians
+//        double angle = Math.PI * 2 / numPoints;
+//
+//        // The coordinates of the points
+//        int[] xPoints = new int[numPoints];
+//        int[] yPoints = new int[numPoints];
+//
+//        // Calculate the coordinates of each point
+//        for (int i = 0; i < numPoints; i++) {
+//            xPoints[i] = center.x + (int) (Math.sin(i * angle) * radius);
+//            yPoints[i] = center.y - (int) (Math.cos(i * angle) * radius);
+//        }
+//
+//        // Connect every second point
+//        int[] xStarPoints = new int[numPoints];
+//        int[] yStarPoints = new int[numPoints];
+//        for (int i = 0; i < numPoints; i++) {
+//            xStarPoints[i] = xPoints[(2 * i) % numPoints];
+//            yStarPoints[i] = yPoints[(2 * i) % numPoints];
+//        }
+//
+//        shape = new Polygon(xStarPoints, yStarPoints, numPoints);
+//        return shape;
+//    }
 
-    //draw circle
-    public Shape makeCircle(Shape shape,Point start, Point end) {
-        int x = Math.min(start.x, end.x);
-        int y= Math.min(start.y, end.y);
-        int width = Math.abs(start.x - end.x);
-        int height = Math.abs(start.y - end.y);
-        shape = new Ellipse2D.Double(x, y, Math.max(width, height), Math.max(width, height));
-        return shape;
-    }
 
-    //draw oval
-    public Shape makeOval(Shape shape, Point start, Point end) {
-        int x = Math.min(start.x, end.x);
-        int y = Math.min(start.y, end.y);
-        int width = Math.abs(start.x - end.x);
-        int height = Math.abs(start.y - end.y);
-        shape = new Ellipse2D.Double(x, y, width, height);
-        return shape;
-    }
-
-
-    //Make text
-    public Shape makeText(Shape shape,Point start) {
-        int x = start.x - 5;
-        int y= start.y - 20;
-        int width = 130;
-        int height = 25;
-        shape = new RoundRectangle2D.Double(x, y, width, height, 15, 15);
-        return shape;
-    }
+//    //Make text
+//    public Shape makeText(Shape shape,Point start) {
+//        int x = start.x - 5;
+//        int y= start.y - 20;
+//        int width = 130;
+//        int height = 25;
+//        shape = new RoundRectangle2D.Double(x, y, width, height, 15, 15);
+//        return shape;
+//    }
 
 
 
@@ -623,12 +656,12 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
 
         if (CanvasStatus.getState().equals("start")) {
             //Let hashmap startPoint stores the start point of a client and wait for the next draw action
-            startPoints.put(CanvasStatus.getName(), CanvasStatus.getStartPoint());
+            endPoints.put(CanvasStatus.getName(), CanvasStatus.getEndPoint());
             return;
         }
 
         //start from the start point of client x
-        Point startPtName = (Point)startPoints.get(CanvasStatus.getName());
+        Point startPtName = (Point)endPoints.get(CanvasStatus.getName());
 
         //set canvas painting color (Sets the Paint attribute for the Graphics2D context.)
         canvasWhiteboard.getGraphic().setPaint(CanvasStatus.getColor());
@@ -638,8 +671,8 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                 // Constructs a solid BasicStroke with the specified line width and with default values for the cap
                 canvasWhiteboard.getGraphic().setStroke(new BasicStroke(15.0f));// The width
             }
-            shape = makeLine(shape,startPtName, CanvasStatus.getStartPoint());
-            startPoints.put(CanvasStatus.getName(), CanvasStatus.getStartPoint());
+            shape = canvasWhiteboard.makeLine(shape,startPtName, CanvasStatus.getEndPoint());
+            endPoints.put(CanvasStatus.getName(), CanvasStatus.getEndPoint());
             canvasWhiteboard.getGraphic().draw(shape);
             canvasWhiteboard.repaint();
             return;
@@ -648,18 +681,21 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         //the mouse is released, so we draw from start point to the broadcast point
         if (CanvasStatus.getState().equals("end")) {
             if (CanvasStatus.getMode().equals("draw") || CanvasStatus.getMode().equals("line")) {
-                shape = makeLine(shape,startPtName, CanvasStatus.getStartPoint());
+                shape = canvasWhiteboard.makeLine(shape, startPtName, CanvasStatus.getEndPoint());
             } else if (CanvasStatus.getMode().equals("eraser")) {
-                canvasWhiteboard.getGraphic().setStroke(new BasicStroke(1.0f));
+                canvasWhiteboard.getGraphic().setStroke(new BasicStroke(3.0f));
             } else if (CanvasStatus.getMode().equals("rect")) {
-                shape = makeRect(shape,startPtName, CanvasStatus.getStartPoint());
+                shape = canvasWhiteboard.makeRect(shape, startPtName, CanvasStatus.getEndPoint());
             } else if (CanvasStatus.getMode().equals("circle")) {
-                shape = makeCircle(shape,startPtName, CanvasStatus.getStartPoint());
-            }  else if (CanvasStatus.getMode().equals("oval")) {
-                shape = makeOval(shape,startPtName, CanvasStatus.getStartPoint());
+                shape = canvasWhiteboard.makeCircle(shape, startPtName, CanvasStatus.getEndPoint());
+            } else if (CanvasStatus.getMode().equals("oval")) {
+                shape = canvasWhiteboard.makeOval(shape, startPtName, CanvasStatus.getEndPoint());
+            } else if (CanvasStatus.getMode().equals("star")) {
+                int disStar = canvasWhiteboard.calculateDistance(startPtName, CanvasStatus.getEndPoint());
+                shape = canvasWhiteboard.makeStar(shape, startPtName, disStar);
             } else if (CanvasStatus.getMode().equals("text")) {
                 canvasWhiteboard.getGraphic().setFont(new Font("TimesRoman", Font.PLAIN, 24));
-                canvasWhiteboard.getGraphic().drawString(CanvasStatus.getText(), CanvasStatus.getStartPoint().x, CanvasStatus.getStartPoint().y);
+                canvasWhiteboard.getGraphic().drawString(CanvasStatus.getText(), CanvasStatus.getEndPoint().x, CanvasStatus.getEndPoint().y);
             }
             //draw shape if in shape mode: triangle, circle, rectangle
             if (!CanvasStatus.getMode().equals("text")) {
@@ -673,11 +709,13 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
             // this component's paint method as soon as possible.
             canvasWhiteboard.repaint();
             //once finished drawing remove the start point of client x
-            startPoints.remove(CanvasStatus.getName());
+            endPoints.remove(CanvasStatus.getName());
 //            return;
         }
         return;
     }
+
+
 
     @Override
     public void updateUserList(List<ICanvasClient> usernames) throws RemoteException {

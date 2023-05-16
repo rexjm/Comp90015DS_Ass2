@@ -8,7 +8,7 @@ public interface ICanvasStatus extends Remote {
 
     String getShape() throws RemoteException;
     Paint getColor() throws RemoteException;
-    Point getStartPoint() throws RemoteException;
+    Point getEndPoint() throws RemoteException;
     String getText() throws RemoteException;
     String getName() throws RemoteException;
 
