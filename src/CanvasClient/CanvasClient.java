@@ -8,6 +8,8 @@ import CanvasRemote.ICanvasStatus;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -423,41 +425,33 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         JScrollPane currUsers = new JScrollPane(clientJlist);
         currUsers.setMinimumSize(new Dimension(100, 150));
 
-        // if the client is the manager, he can remove client
+        // if the client is the manager, he can kick out client
         if (isManager) {
-            clientJlist.addMouseListener(new MouseAdapter() {
-                public void mouseClicked(MouseEvent evt) {
-                    @SuppressWarnings("unchecked")
-                    JList<String> list = (JList<String>)evt.getSource();
-                    if (evt.getClickCount() == 2) {
-                        int index = list.locationToIndex(evt.getPoint());
-                        String selectedName = list.getModel().getElementAt(index);
-                        try {
-                            //manager can't remove him/herself
-                            if(! getClientName().equals(selectedName)) {
-                                int dialogResult = JOptionPane.showConfirmDialog (frame, "Are you sure to remove " + selectedName + "?",
-                                        "Warning", JOptionPane.YES_NO_OPTION);
-                                if(dialogResult == JOptionPane.YES_OPTION) {
-                                    try {
-                                        canvasServer.kickUser(selectedName);
-                                        updateUserList(canvasServer.updateUserList());
-                                    } catch (IOException e) {
-                                        // TODO Auto-generated catch block
-                                        System.err.println("There is an IO error.");
-                                    }
+            kickUserButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    String selectedName = clientJlist.getSelectedValue();
+                    try {
+                        if (selectedName != null && !getClientName().equals(selectedName)) {
+                            int dialogResult = JOptionPane.showConfirmDialog(frame,
+                                    "Are you sure to remove " + selectedName + "?", "Warning",
+                                    JOptionPane.YES_NO_OPTION);
+                            if (dialogResult == JOptionPane.YES_OPTION) {
+                                try {
+                                    canvasServer.kickUser(selectedName);
+                                    updateUserList(canvasServer.updateUserList());
+                                } catch (IOException ex) {
+                                    System.err.println("There is an IO error.");
                                 }
                             }
-                        } catch (HeadlessException e) {
-                            // TODO Auto-generated catch block
-                            System.err.println("There is an headless error.");
-                        } catch (RemoteException e) {
-                            // TODO Auto-generated catch block
-                            System.err.println("There is an IO error.");
                         }
+                    } catch (RemoteException ex) {
+                        throw new RuntimeException(ex);
                     }
                 }
             });
+
         }
+
 
         // create a chatbox with a send button
         chatInputBox = new JList<>(chatList);
