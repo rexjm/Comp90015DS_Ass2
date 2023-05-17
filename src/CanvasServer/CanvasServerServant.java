@@ -127,6 +127,9 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
                 image = client.sendImage();
             }
         }
+        if (image == null) {
+            throw new IOException("Unable to send image");
+        }
         return image;
     }
 
@@ -141,7 +144,7 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
     }
 
     @Override
-    public byte[] sendImage() throws RemoteException {
+    public byte[] sendImage() throws IOException {
         byte[] image = null;
         for (ICanvasClient client : clientSet) {
             if (client.isClientManager()) {

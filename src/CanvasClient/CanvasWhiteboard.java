@@ -186,6 +186,9 @@ public class CanvasWhiteboard extends JComponent {
 
     //The method for painting the shape on the white board.
     // initialize the white board to synchronize with the manager's image when the client join the shared white board
+
+    // When call the repaint() method, Swing automatically calls the paintComponent
+    // method to repaint the component
     protected void paintComponent (Graphics g) {
         if (image == null) {
             if (isManager) {
@@ -221,18 +224,19 @@ public class CanvasWhiteboard extends JComponent {
         return previousCanvas;
     }
     public void reset(){
-    graphics.setPaint (Color.white);
-    graphics. fillRect(0, 0, 950, 550);
-    graphics.setPaint (color);
-    repaint();
+        graphics.setPaint (Color.white);
+        graphics. fillRect(0, 0, 950, 550);
+        graphics.setPaint (color);
+        repaint();
     }
 
     //save the image
     public RenderedImage saveCanvas () {
         ColorModel cm = image.getColorModel();
         WritableRaster raster = image.copyData(null);
+        //Copy to previousCanvas so user can continue editing after saving the image without affecting the saved image
         previousCanvas = new BufferedImage(cm, raster, false, null);
-        return null;
+        return previousCanvas;
     }
     //cover the current canvas with previous canvas states
     public void drawPreviousCanvas () {
@@ -406,13 +410,36 @@ public class CanvasWhiteboard extends JComponent {
     }
 
     public void showImage(BufferedImage openedImage) {
+        // After opening the image, the graphics object does not reinitialize when the image is not null
+        // due to a condition in paintComponent method. So, Initialize the graphics object
+
+        this.image = openedImage;
+        graphics = (Graphics2D) image.getGraphics();
+        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        graphics.setPaint(color);
+
+        // When calling the repaint() method, Swing automatically calls the paintComponent
+        // method to repaint the component
+        repaint();
     }
 
+
+
+
     public void cleanAll() {
+
        reset();
     }
 
 
-
+    public boolean askClean() {
+        int option = JOptionPane.showConfirmDialog(null, "Are you sure you want to open a new " +
+                "canvas? The previous canvas will be cleared. Please save first!", "Confirmation"
+                , JOptionPane.YES_NO_OPTION);
+        if (option == JOptionPane.YES_OPTION) {
+            return true;
+        }
+        return false;
+    }
 }
 

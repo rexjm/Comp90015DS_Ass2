@@ -57,5 +57,5 @@ public interface ICanvasServer extends Remote, Serializable {
 
     void addChat(String s) throws RemoteException;
 
-    byte[] sendImage() throws RemoteException;
+    byte[] sendImage() throws IOException;
 }

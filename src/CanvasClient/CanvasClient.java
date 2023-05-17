@@ -3,11 +3,13 @@ package CanvasClient;
 import CanvasRemote.ICanvasClient;
 import CanvasRemote.ICanvasServer;
 import CanvasRemote.ICanvasStatus;
+//import jdk.nashorn.internal.codegen.ConstantData;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -56,6 +58,8 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
 
     private Hashtable<String, Point> endPoints = new Hashtable<String, Point>();
     private JButton[] leftToolButtons;
+    private List<JButton> colorButtons = new ArrayList<>();
+    private boolean hasSaved;
 
 
     protected CanvasClient() throws RemoteException {
@@ -65,6 +69,73 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         this.allowed = false;
     }
 
+
+
+    private void saveAsFile() throws IOException{
+        FileDialog saveAsDialog = new FileDialog(frame, "Save an image.", FileDialog.SAVE);
+        saveAsDialog.setVisible(true);
+        if (saveAsDialog.getFile() != null) {
+            this.fileName = saveAsDialog.getFile();
+            this.filePath = saveAsDialog.getDirectory();
+            ImageIO.write(canvasWhiteboard.saveCanvas(), "png", new File(filePath + fileName));
+            this.hasSaved = true;
+        }
+    }
+
+    private void saveFile() throws IOException {
+        if (!hasSaved) {
+            JOptionPane.showMessageDialog(null, "Please save as a file firstly!");
+            saveAsFile();
+        } else {
+            if (fileName != null && filePath != null) {
+                ImageIO.write(canvasWhiteboard.saveCanvas(), "png", new File(filePath + fileName));
+                JOptionPane.showMessageDialog(null, "Save successfully!");
+            } else {
+                JOptionPane.showMessageDialog(null, "Please save as a file firstly!");
+                saveAsFile();
+            }
+        }
+    }
+
+
+
+    private void openNewFile() throws IOException {
+        try {
+            saveFile();
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Open an existing image.");
+        int userSelection = fileChooser.showOpenDialog(frame);
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            hasSaved = true;
+            File fileToOpen = fileChooser.getSelectedFile();
+            this.fileName = fileToOpen.getName();
+            // Get the directory path, not the complete file path
+            this.filePath = fileToOpen.getParent() + "/";
+
+            BufferedImage openedImage = ImageIO.read(fileToOpen);
+            canvasWhiteboard.showImage(openedImage);
+            ByteArrayOutputStream openedImageByte = new ByteArrayOutputStream();
+
+            if (fileName.endsWith(".png")) {
+                ImageIO.write(openedImage, "png", openedImageByte);
+            } else if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) {
+                ImageIO.write(openedImage, "jpeg", openedImageByte);
+            } else {
+                throw new IllegalArgumentException("Unsupported file format: " + fileName);
+            }
+            try {
+                CanvasServer.updateImage(openedImageByte.toByteArray());
+            } catch (IOException e) {
+                e.printStackTrace();
+                // Handle the exception as appropriate
+            }
+
+        }
+    }
+
     ActionListener actionListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -72,16 +143,30 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
             LineBorder border = new LineBorder(Color.ORANGE, 2);
 
             Object source = e.getSource();
-            // if a new button is pressed, clean the border of the previous one
-            for (JButton button : leftToolButtons) {
-                if (button != source) {
-                    button.setBorder(noBorder);
+            // if a new button except for the color button is pressed, clean the border of the previous one
+            if (!colorButtons.contains(source)) {
+                for (JButton button : leftToolButtons) {
+                    if (button != source) {
+                        button.setBorder(noBorder);
+                    }
                 }
             }
 
             if (source.equals(newButton)) {
                 if (isManager) {
-                    canvasWhiteboard.cleanAll();
+                    // should notice the server to clean all client's canvas
+                    boolean clean = canvasWhiteboard.askClean();
+                    if (clean) {
+                        try {
+                            saveFile();
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        if (hasSaved == true) {
+                            canvasWhiteboard.cleanAll();
+                            hasSaved = false;
+                        }
+                    }
                 }
             } else if (source.equals(openButton)) {
                 try {
@@ -161,42 +246,6 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
             }
         }
     };
-
-    private void saveAsFile() throws IOException{
-        FileDialog saveAsDialog = new FileDialog(frame, "Save an image.", FileDialog.SAVE);
-        saveAsDialog.setVisible(true);
-        if (saveAsDialog.getFile() != null) {
-            this.fileName = saveAsDialog.getName();
-            this.fileName = saveAsDialog.getDirectory();
-            ImageIO.write(canvasWhiteboard.saveCanvas(), "png", new File(filePath + fileName));
-
-        }
-
-    }
-
-    private void saveFile() throws IOException{
-        if (fileName != null && filePath != null) {
-            ImageIO.write(canvasWhiteboard.saveCanvas(), "png", new File(filePath + fileName));
-        } else {
-            saveAsFile();
-        }
-    }
-
-
-    private void openNewFile() throws IOException{
-        FileDialog fileDialog = new FileDialog(frame, "Open an exist image.", FileDialog.LOAD);
-        fileDialog.setVisible(true);
-        if (fileDialog.getFile() != null) {
-            this.fileName = fileDialog.getName();
-            this.filePath = fileDialog.getDirectory();
-            BufferedImage openedImage = ImageIO.read(new File(filePath + filePath));
-            canvasWhiteboard.showImage(openedImage);
-            ByteArrayOutputStream openedImageByte = new ByteArrayOutputStream();
-            ImageIO.write(openedImage, "png", openedImageByte);
-            CanvasServer.updateImage(openedImageByte.toByteArray());
-        }
-    }
-
     public void initialize(ICanvasServer canvasServer) {
         JFrame frame = new JFrame("Login account: " + clientName);
         frame.setTitle(clientName + " Have fun !");
@@ -292,39 +341,14 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         colorButtonsPanel.setLayout(new GridLayout(2, 8));
         colorButtonsPanel.setMaximumSize(new Dimension(180, 50));
         Dimension colorBtnDim = new Dimension(5, 5);
-        greenBtn.setPreferredSize(colorBtnDim);
-        redBtn.setPreferredSize(colorBtnDim);
-        orangeBtn.setPreferredSize(colorBtnDim);
-        pinkBtn.setPreferredSize(colorBtnDim);
-        darkgreyBtn.setPreferredSize(colorBtnDim);
-        yellowBtn.setPreferredSize(colorBtnDim);
-        blackBtn.setPreferredSize(colorBtnDim);
-        whiteBtn.setPreferredSize(colorBtnDim);
-        blueBtn.setPreferredSize(colorBtnDim);
-        greyBtn.setPreferredSize(colorBtnDim);
-        purpleBtn.setPreferredSize(colorBtnDim);
-        darkBlueBtn.setPreferredSize(colorBtnDim);
-        cyanBtn.setPreferredSize(colorBtnDim);
-        brownBtn.setPreferredSize(colorBtnDim);
-        magentaBtn.setPreferredSize(colorBtnDim);
-        lightGrayBtn.setPreferredSize(colorBtnDim);
+        setPreferredSize(colorBtnDim, greenBtn, redBtn, orangeBtn, pinkBtn, darkgreyBtn, yellowBtn, blackBtn, whiteBtn);
+        setPreferredSize(colorBtnDim, blueBtn, greyBtn, purpleBtn, darkBlueBtn, cyanBtn, brownBtn, magentaBtn, lightGrayBtn);
 
-        colorButtonsPanel.add(orangeBtn);
-        colorButtonsPanel.add(redBtn);
-        colorButtonsPanel.add(greenBtn);
-        colorButtonsPanel.add(pinkBtn);
-        colorButtonsPanel.add(blackBtn);
-        colorButtonsPanel.add(whiteBtn);
-        colorButtonsPanel.add(yellowBtn);
-        colorButtonsPanel.add(cyanBtn);
-        colorButtonsPanel.add(brownBtn);
-        colorButtonsPanel.add(greyBtn);
-        colorButtonsPanel.add(purpleBtn);
-        colorButtonsPanel.add(darkBlueBtn);
-        colorButtonsPanel.add(darkgreyBtn);
-        colorButtonsPanel.add(blueBtn);
-        colorButtonsPanel.add(magentaBtn);
-        colorButtonsPanel.add(lightGrayBtn);
+        colorPanelExtractor(colorButtonsPanel, orangeBtn, redBtn, greenBtn, pinkBtn, blackBtn, whiteBtn, yellowBtn, cyanBtn);
+        colorPanelExtractor(colorButtonsPanel, brownBtn, greyBtn, purpleBtn, darkBlueBtn, darkgreyBtn, blueBtn, magentaBtn, lightGrayBtn);
+        colorExtractor(orangeBtn, redBtn, greenBtn, pinkBtn, blackBtn, whiteBtn, yellowBtn, cyanBtn);
+        colorExtractor(brownBtn, greyBtn, purpleBtn, darkBlueBtn, darkgreyBtn, blueBtn, magentaBtn, lightGrayBtn);
+
 
         LineBorder border = new LineBorder(Color.black, 2);
         Icon icon = new ImageIcon("./icon/1.png");
@@ -599,6 +623,39 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                 }
             }
         });
+    }
+
+    private void setPreferredSize(Dimension colorBtnDim, JButton greenBtn, JButton redBtn, JButton orangeBtn, JButton pinkBtn, JButton darkgreyBtn, JButton yellowBtn, JButton blackBtn, JButton whiteBtn) {
+        greenBtn.setPreferredSize(colorBtnDim);
+        redBtn.setPreferredSize(colorBtnDim);
+        orangeBtn.setPreferredSize(colorBtnDim);
+        pinkBtn.setPreferredSize(colorBtnDim);
+        darkgreyBtn.setPreferredSize(colorBtnDim);
+        yellowBtn.setPreferredSize(colorBtnDim);
+        blackBtn.setPreferredSize(colorBtnDim);
+        whiteBtn.setPreferredSize(colorBtnDim);
+    }
+
+    private void colorPanelExtractor(JPanel colorButtonsPanel, JButton orangeBtn, JButton redBtn, JButton greenBtn, JButton pinkBtn, JButton blackBtn, JButton whiteBtn, JButton yellowBtn, JButton cyanBtn) {
+        colorButtonsPanel.add(orangeBtn);
+        colorButtonsPanel.add(redBtn);
+        colorButtonsPanel.add(greenBtn);
+        colorButtonsPanel.add(pinkBtn);
+        colorButtonsPanel.add(blackBtn);
+        colorButtonsPanel.add(whiteBtn);
+        colorButtonsPanel.add(yellowBtn);
+        colorButtonsPanel.add(cyanBtn);
+    }
+
+    private void colorExtractor(JButton brownBtn, JButton greyBtn, JButton purpleBtn, JButton darkBlueBtn, JButton darkgreyBtn, JButton blueBtn, JButton magentaBtn, JButton lightGrayBtn) {
+        this.colorButtons.add(brownBtn);
+        this.colorButtons.add(greyBtn);
+        this.colorButtons.add(purpleBtn);
+        this.colorButtons.add(darkBlueBtn);
+        this.colorButtons.add(darkgreyBtn);
+        this.colorButtons.add(blueBtn);
+        this.colorButtons.add(magentaBtn);
+        this.colorButtons.add(lightGrayBtn);
     }
 
     @Override
