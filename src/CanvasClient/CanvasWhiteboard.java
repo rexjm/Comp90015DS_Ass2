@@ -198,7 +198,7 @@ public class CanvasWhiteboard extends JComponent {
                 reset();
             } else {
                 try {
-                    byte[] rawImage = server.sendImage();
+                    byte[] rawImage = server.getManagerImage();
                     image = ImageIO.read(new ByteArrayInputStream(rawImage));
                     graphics = (Graphics2D) image.getGraphics();
                     graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

@@ -18,6 +18,7 @@ import java.util.Set;
 public class CanvasServerServant extends UnicastRemoteObject implements ICanvasServer {
     private Set<ICanvasClient> clientSet;
     private ICanvasClient manager;
+    private boolean hasManager;
 
     protected CanvasServerServant() throws RemoteException {
         this.clientSet = new HashSet<ICanvasClient>();
@@ -51,6 +52,7 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
             // if the new client get the permission from manager
             if (allowed) {
                 addClientToList(CanvasClient);
+                CanvasClient.setAllowed(true);
             }
         }
         // Update the client lists for all clients
@@ -64,13 +66,13 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
     public void addUser(ICanvasClient CanvasClient) throws RemoteException {
         if  (!hasManager()) {
             CanvasClient.setClientManager("[Manager] " + CanvasClient.getClientName());
+            this.hasManager = true;
             // The first person is allowed to join
             CanvasClient.setAllowed(true);
         }
         // Ask the manager whether the new client is allowed to join
         checkUserValidity(CanvasClient);
     }
-
 
 
     @Override
@@ -124,7 +126,7 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
         byte[] image = null;
         for (ICanvasClient client : clientSet) {
             if (client.isClientManager()) {
-                image = client.sendImage();
+                image = client.getImage();
             }
         }
         if (image == null) {
@@ -144,11 +146,12 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
     }
 
     @Override
-    public byte[] sendImage() throws IOException {
+    public byte[] getManagerImage() throws IOException {
         byte[] image = null;
         for (ICanvasClient client : clientSet) {
             if (client.isClientManager()) {
-                image = client.sendImage();
+                image = client.getImage();
+                break;  // Find the manager client and jump out of the loop
             }
         }
         return image;
@@ -198,13 +201,13 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
 
     // Set the manager of the canvas
     public void setManager(ICanvasClient manager) {
-        this. manager = manager;
+        this.manager = manager;
     }
 
 
     // Check if the canvas has a manager
     public boolean hasManager() {
-        return manager != null;
+        return hasManager;
     }
 
 }

@@ -52,7 +52,7 @@ public interface ICanvasClient extends Remote, Serializable {
     void setClientManager(String managerName) throws RemoteException;
 
     // Send the canvas status to server
-    byte[] synCanvas() throws RemoteException, IOException;
+//    byte[] synCanvas() throws RemoteException, IOException;
 
     ///////
 
@@ -63,7 +63,7 @@ public interface ICanvasClient extends Remote, Serializable {
 
     void cleanCanvas() throws RemoteException;
 
-    byte[] sendImage() throws RemoteException;
+    byte[] getImage() throws IOException;
 
     void shutDownUI() throws RemoteException;
 

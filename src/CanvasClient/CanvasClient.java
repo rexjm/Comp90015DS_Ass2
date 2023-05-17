@@ -489,95 +489,171 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
             }
         });
 
+        if (isManager) {
+            // set the layout
+            GroupLayout layout = new GroupLayout(content);
+            content.setLayout(layout);
+            layout.setAutoCreateGaps(true);
+            layout.setAutoCreateContainerGaps(true);
 
-        // set the layout
-        GroupLayout layout = new GroupLayout(content);
-        content.setLayout(layout);
-        layout.setAutoCreateGaps(true);
-        layout.setAutoCreateContainerGaps(true);
+            // The Horizontal layout
+            layout.setHorizontalGroup(layout.createSequentialGroup()
+                    .addGroup(layout.createParallelGroup(CENTER)
+                            .addComponent(lineButton)
+                            .addComponent(rectangleButton)
+                            .addComponent(circleButton)
+                            .addComponent(ovalButton)
+                            .addComponent(starButton)
+                            .addComponent(textButton)
+                            .addComponent(eraserButton)
+                            .addComponent(currUsers)
+                            .addComponent(kickUserButton)
+                    )
+                    .addGroup(layout.createParallelGroup()
+                            .addGroup(layout.createSequentialGroup()
+                                    .addComponent(newButton)
+                                    .addComponent(openButton)
+                                    .addComponent(saveButton)
+                                    .addComponent(saveAsButton)
+                                    .addComponent(colorButtonsPanel)
+                            )
+                            .addGroup(layout.createParallelGroup()
+                                    .addComponent(canvasWhiteboard)
+                                    .addComponent(msgArea)
+                                    .addGroup(layout.createSequentialGroup()
+                                            .addComponent(inputArea)
+                                            .addComponent(sendBtn)
+                                    )
+                            )
+                    )
+            );
 
-        // The Horizontal layout
-        layout.setHorizontalGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(CENTER)
-                        .addComponent(lineButton)
-                        .addComponent(rectangleButton)
-                        .addComponent(circleButton)
-                        .addComponent(ovalButton)
-                        .addComponent(starButton)
-                        .addComponent(textButton)
-                        .addComponent(eraserButton)
-                        .addComponent(currUsers)
-                        .addComponent(kickUserButton)
-                )
-                .addGroup(layout.createParallelGroup()
-                        .addGroup(layout.createSequentialGroup()
-                                .addComponent(newButton)
-                                .addComponent(openButton)
-                                .addComponent(saveButton)
-                                .addComponent(saveAsButton)
-                                .addComponent(colorButtonsPanel)
-                        )
-                        .addGroup(layout.createParallelGroup()
-                                .addComponent(canvasWhiteboard)
-                                .addComponent(msgArea)
-                                .addGroup(layout.createSequentialGroup()
-                                        .addComponent(inputArea)
-                                        .addComponent(sendBtn)
-                                )
-                        )
-                )
-        );
+            // The vertical layout
+            layout.setVerticalGroup(layout.createSequentialGroup()
+                    .addGroup(layout.createParallelGroup(BASELINE)
+                            .addGroup(layout.createSequentialGroup()
+                                    .addComponent(lineButton)
+                            )
+                            .addGroup(layout.createSequentialGroup()
+                                    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+                                            .addComponent(newButton)
+                                            .addComponent(openButton)
+                                            .addComponent(saveButton)
+                                            .addComponent(saveAsButton)
+                                            .addComponent(colorButtonsPanel)
+                                    )
+                            )
+                    )
+                    .addGroup(layout.createParallelGroup(BASELINE)
+                            .addGroup(layout.createSequentialGroup()
+                                    .addComponent(rectangleButton)
+                                    .addComponent(circleButton)
+                                    .addComponent(ovalButton)
+                                    .addComponent(starButton)
+                                    .addComponent(textButton)
+                                    .addComponent(eraserButton)
+                            )
+                            .addGroup(layout.createSequentialGroup()
+                                    .addComponent(canvasWhiteboard)
+                            )
+                    )
+                    .addGroup(layout.createParallelGroup(BASELINE)
+                            .addGroup(layout.createSequentialGroup()
+                                    .addComponent(currUsers)
+                                    .addComponent(kickUserButton)
+                            )
+                            .addGroup(layout.createSequentialGroup()
+                                    .addComponent(msgArea)
+                                    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+                                            .addComponent(inputArea)
+                                            .addComponent(sendBtn)
+                                    )
+                            )
+                    )
+            );
+        } else {
+            // set the layout
+            GroupLayout layout = new GroupLayout(content);
+            content.setLayout(layout);
+            layout.setAutoCreateGaps(true);
+            layout.setAutoCreateContainerGaps(true);
 
-        // The vertical layout
-        layout.setVerticalGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(BASELINE)
-                        .addGroup(layout.createSequentialGroup()
-                                .addComponent(lineButton)
-                        )
-                        .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-                                        .addComponent(newButton)
-                                        .addComponent(openButton)
-                                        .addComponent(saveButton)
-                                        .addComponent(saveAsButton)
-                                        .addComponent(colorButtonsPanel)
-                                )
-                        )
-                )
-                .addGroup(layout.createParallelGroup(BASELINE)
-                        .addGroup(layout.createSequentialGroup()
-                                .addComponent(rectangleButton)
-                                .addComponent(circleButton)
-                                .addComponent(ovalButton)
-                                .addComponent(starButton)
-                                .addComponent(textButton)
-                                .addComponent(eraserButton)
-                        )
-                        .addGroup(layout.createSequentialGroup()
-                                .addComponent(canvasWhiteboard)
-                        )
-                )
-                .addGroup(layout.createParallelGroup(BASELINE)
-                        .addGroup(layout.createSequentialGroup()
-                                .addComponent(currUsers)
-                                .addComponent(kickUserButton)
-                        )
-                        .addGroup(layout.createSequentialGroup()
-                                .addComponent(msgArea)
-                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-                                        .addComponent(inputArea)
-                                        .addComponent(sendBtn)
-                                )
-                        )
-                )
-        );
+            // The Horizontal layout
+            layout.setHorizontalGroup(layout.createSequentialGroup()
+                    .addGroup(layout.createParallelGroup(CENTER)
+                            .addComponent(lineButton)
+                            .addComponent(rectangleButton)
+                            .addComponent(circleButton)
+                            .addComponent(ovalButton)
+                            .addComponent(starButton)
+                            .addComponent(textButton)
+                            .addComponent(eraserButton)
+                            .addComponent(currUsers)
+                    )
+                    .addGroup(layout.createParallelGroup()
+                            .addGroup(layout.createSequentialGroup()
+                                    .addComponent(colorButtonsPanel)
+                            )
+                            .addGroup(layout.createParallelGroup()
+                                    .addComponent(canvasWhiteboard)
+                                    .addComponent(msgArea)
+                                    .addGroup(layout.createSequentialGroup()
+                                            .addComponent(inputArea)
+                                            .addComponent(sendBtn)
+                                    )
+                            )
+                    )
+            );
+
+            // The vertical layout
+            layout.setVerticalGroup(layout.createSequentialGroup()
+                    .addGroup(layout.createParallelGroup(BASELINE)
+                            .addGroup(layout.createSequentialGroup()
+                                    .addComponent(lineButton)
+                            )
+                            .addGroup(layout.createSequentialGroup()
+                                    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+                                            .addComponent(colorButtonsPanel)
+                                    )
+                            )
+                    )
+                    .addGroup(layout.createParallelGroup(BASELINE)
+                            .addGroup(layout.createSequentialGroup()
+                                    .addComponent(rectangleButton)
+                                    .addComponent(circleButton)
+                                    .addComponent(ovalButton)
+                                    .addComponent(starButton)
+                                    .addComponent(textButton)
+                                    .addComponent(eraserButton)
+                            )
+                            .addGroup(layout.createSequentialGroup()
+                                    .addComponent(canvasWhiteboard)
+                            )
+                    )
+                    .addGroup(layout.createParallelGroup(BASELINE)
+                            .addGroup(layout.createSequentialGroup()
+                                    .addComponent(currUsers)
+                            )
+                            .addGroup(layout.createSequentialGroup()
+                                    .addComponent(msgArea)
+                                    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+                                            .addComponent(inputArea)
+                                            .addComponent(sendBtn)
+                                    )
+                            )
+                    )
+            );
+        }
+
         //format to same size
 //        layout.linkSize(SwingConstants.HORIZONTAL, cleanButton, saveButton, saveAsButton, openButton);
 
         // set the minimum framesize
-//        if (isManager) frame.setMinimumSize(new Dimension(1200, 800));
-//        else
-        frame.setMinimumSize(new Dimension(1200, 800));
+        if (!isManager) {
+            frame.setMinimumSize(new Dimension(800, 780));
+        } else {
+            frame.setMinimumSize(new Dimension(1200, 800));
+        }
 
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -661,84 +737,6 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
     public void setAllowed(boolean permission) throws RemoteException {
         this.allowed = permission;
     }
-
-
-//    public Shape makeLine(Shape shape,Point start, Point end) {
-//        shape = new Line2D.Double(start.x, start.y, end.x, end.y);
-//        return shape;
-//    }
-//
-//    //draw Rectangle
-//    public Shape makeRect(Shape shape,Point start, Point end) {
-//        int x = Math.min(start.x, end.x);
-//        int y= Math.min(start.y, end.y);
-//        int width = Math.abs(start.x - end.x);
-//        int height = Math.abs(start.y - end.y);
-//        shape = new Rectangle2D.Double(x, y, width, height);
-//        return shape;
-//    }
-//
-//    //draw circle
-//    public Shape makeCircle(Shape shape,Point start, Point end) {
-//        int x = Math.min(start.x, end.x);
-//        int y= Math.min(start.y, end.y);
-//        int width = Math.abs(start.x - end.x);
-//        int height = Math.abs(start.y - end.y);
-//        shape = new Ellipse2D.Double(x, y, Math.max(width, height), Math.max(width, height));
-//        return shape;
-//    }
-//
-//    //draw oval
-//    public Shape makeOval(Shape shape, Point start, Point end) {
-//        int x = Math.min(start.x, end.x);
-//        int y = Math.min(start.y, end.y);
-//        int width = Math.abs(start.x - end.x);
-//        int height = Math.abs(start.y - end.y);
-//        shape = new Ellipse2D.Double(x, y, width, height);
-//        return shape;
-//    }
-
-//    private Shape makeStar(Shape shape, Point center, int radius) {
-//        // The number of points of the star
-//        int numPoints = 5;
-//
-//        // The angle between each point in radians
-//        double angle = Math.PI * 2 / numPoints;
-//
-//        // The coordinates of the points
-//        int[] xPoints = new int[numPoints];
-//        int[] yPoints = new int[numPoints];
-//
-//        // Calculate the coordinates of each point
-//        for (int i = 0; i < numPoints; i++) {
-//            xPoints[i] = center.x + (int) (Math.sin(i * angle) * radius);
-//            yPoints[i] = center.y - (int) (Math.cos(i * angle) * radius);
-//        }
-//
-//        // Connect every second point
-//        int[] xStarPoints = new int[numPoints];
-//        int[] yStarPoints = new int[numPoints];
-//        for (int i = 0; i < numPoints; i++) {
-//            xStarPoints[i] = xPoints[(2 * i) % numPoints];
-//            yStarPoints[i] = yPoints[(2 * i) % numPoints];
-//        }
-//
-//        shape = new Polygon(xStarPoints, yStarPoints, numPoints);
-//        return shape;
-//    }
-
-
-//    //Make text
-//    public Shape makeText(Shape shape,Point start) {
-//        int x = start.x - 5;
-//        int y= start.y - 20;
-//        int width = 130;
-//        int height = 25;
-//        shape = new RoundRectangle2D.Double(x, y, width, height, 15, 15);
-//        return shape;
-//    }
-
-
 
 
     @Override
@@ -869,12 +867,12 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         this.clientName = managerName;
     }
 
-    @Override
-    public byte[] synCanvas() throws RemoteException, IOException {
-        ByteArrayOutputStream imageArray = new ByteArrayOutputStream();
-        ImageIO.write(this.canvasWhiteboard.saveCanvas(), "png", imageArray);
-        return imageArray.toByteArray();
-    }
+//    @Override
+//    public byte[] synCanvas() throws RemoteException, IOException {
+//        ByteArrayOutputStream imageArray = new ByteArrayOutputStream();
+//        ImageIO.write(this.canvasWhiteboard.saveCanvas(), "png", imageArray);
+//        return imageArray.toByteArray();
+//    }
 
     @Override
     public void terminateApp() throws RemoteException {
@@ -900,8 +898,10 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
     }
 
     @Override
-    public byte[] sendImage() {
-        return new byte[0];
+    public byte[] getImage() throws IOException {
+        ByteArrayOutputStream imageArray = new ByteArrayOutputStream();
+        ImageIO.write(this.canvasWhiteboard.saveCanvas(), "png", imageArray);
+        return imageArray.toByteArray();
     }
 
     @Override
