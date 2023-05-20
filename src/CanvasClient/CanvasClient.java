@@ -1001,9 +1001,12 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
             String client_name = "";
             while(!validName) {
                 client_name = JOptionPane.showInputDialog("Please type in your name:");
-                if(client_name.equals("")) {
+                if(client_name == null) {
+                    // User clicked cancel, close the window
+                    System.exit(0);
+                } else if(client_name.equals("")) {
                     JOptionPane.showMessageDialog(null, "Please enter a name!");
-                }else {
+                } else {
                     validName = true;
                 }
                 // If the user is the first to be added

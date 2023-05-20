@@ -202,7 +202,7 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
         }
         // reset the manager to avoid the next client cannot join
         hasManager = false;
-        clientSet.clear();
+        chatHistory = null;
         System.out.println("The manager closes the application!");
     }
 
