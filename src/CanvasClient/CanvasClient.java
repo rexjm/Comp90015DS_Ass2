@@ -687,8 +687,11 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                             JOptionPane.YES_NO_OPTION,
                             JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
                         try {
-                            canvasServer.removeUser(clientName);
-                            updateUserList(canvasServer.updateUserList());
+                            canvasServer.kickUser(clientName);
+                            updateUserList(canvasServer.getUsers());
+                            // notify JList to update its view
+                            clientJlist.setModel(clientList);
+                            clientJlist.updateUI();
                         } catch (RemoteException e) {
                             JOptionPane.showMessageDialog(null, "Canvas server is down, please save and exit.");
                         } finally {

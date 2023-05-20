@@ -84,7 +84,7 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
         for (ICanvasClient client : clientSet) {
             if (client.getClientName().equals(clientName)) {
                 clientsToBeRemoved.add(client);
-                System.out.println("User" + clientName + " will be removed!");
+                System.out.println("User" + clientName + " left!");
                 client.shutDownUI();
             }
         }
