@@ -33,6 +33,8 @@ public class CanvasWhiteboard extends JComponent {
     private BufferedImage previousCanvas;
     private Graphics2D graphics;//save the state of current/previous canvas
     private ICanvasServer server;
+    private boolean isModified = false;
+
    public CanvasWhiteboard(String name, boolean isManager, ICanvasServer RemoteInterface){
         this.server = RemoteInterface;
         this.clientName = name;
@@ -46,7 +48,7 @@ public class CanvasWhiteboard extends JComponent {
         //When listens a mouse click, store the start location and send it to the server
         addMouseListener(new MouseAdapter() {
              public void mousePressed(MouseEvent e) {
-
+                 setModified(true);
                  startPt = e.getPoint();
                  saveCanvas();
                  try {
@@ -62,6 +64,7 @@ public class CanvasWhiteboard extends JComponent {
         addMouseMotionListener (new MouseMotionAdapter() {
             public void mouseDragged (MouseEvent e) {
                 //get the end point
+                setModified(true);
                 endPt = e.getPoint ();
                 Shape shape = null;
                 if (graphics != null) {
@@ -127,6 +130,7 @@ public class CanvasWhiteboard extends JComponent {
        addMouseListener (new MouseAdapter () {
            public void mouseReleased(MouseEvent e) {
                //Once the mouse is released
+               setModified(true);
                endPt = e.getPoint();
                Shape shape = null;
                if (graphics != null) {
@@ -445,12 +449,20 @@ public class CanvasWhiteboard extends JComponent {
 
     public boolean askClean() {
         int option = JOptionPane.showConfirmDialog(null, "Are you sure you want to open a new " +
-                "canvas? The previous canvas will be cleared. Please save first!", "Confirmation"
+                "canvas? The previous canvas will be cleared. Please save first if you modified!", "Confirmation"
                 , JOptionPane.YES_NO_OPTION);
         if (option == JOptionPane.YES_OPTION) {
             return true;
         }
         return false;
+    }
+
+    public boolean isModified() {
+        return isModified;
+    }
+
+    public void setModified(boolean modified) {
+        isModified = modified;
     }
 }
 

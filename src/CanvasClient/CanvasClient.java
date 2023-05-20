@@ -54,7 +54,6 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
     private List<JButton> colorButtons = new ArrayList<>();
     private boolean hasSaved;
     private JList<String> clientJlist;
-    private boolean isModified = false;
 
 
 
@@ -97,10 +96,14 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
 
 
     private void openNewFile() throws IOException {
-        try {
-            saveFile();
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
+        boolean isModified;
+        isModified = canvasWhiteboard.isModified();
+        if (isModified) {
+            try {
+                saveFile();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         }
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setDialogTitle("Open an existing image.");
@@ -152,12 +155,9 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
             if (source.equals(newButton)) {
                 boolean openNew = canvasWhiteboard.askClean();
                 if (openNew) {
-                    try {
-                        saveFile();
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                    if (hasSaved == true) {
+                    boolean isModified;
+                    isModified = canvasWhiteboard.isModified();
+                    if (!isModified) {
                         canvasWhiteboard.cleanAll();
                         hasSaved = false;
                         // notice the server to clean all client's canvas
@@ -166,8 +166,25 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                         } catch (RemoteException ex) {
                             throw new RuntimeException(ex);
                         }
+                    } else {
+                        try {
+                            saveFile();
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                        if (hasSaved == true) {
+                            canvasWhiteboard.cleanAll();
+                            hasSaved = false;
+                            // notice the server to clean all client's canvas
+                            try {
+                                CanvasServer.cleanAllCanvas();
+                            } catch (RemoteException ex) {
+                                throw new RuntimeException(ex);
+                            }
+                        }
                     }
                 }
+                canvasWhiteboard.setModified(false);
             }
             else if (source.equals(openButton)) {
                 try {
@@ -351,13 +368,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         colorExtractor(brownBtn, greyBtn, purpleBtn, darkBlueBtn, darkgreyBtn, blueBtn, magentaBtn, lightGrayBtn);
 
 
-        LineBorder border = new LineBorder(Color.black, 2);
-        Icon icon = new ImageIcon("./icon/1.png");
-//        drawBtn = new JButton(icon);
-//        drawBtn.setToolTipText("Pencil draw");
-//        drawBtn.setBorder(border);
-//        drawBtn.addActionListener(actionListener);
-        border = new LineBorder(new Color(238,238,238), 2);
+        LineBorder border = new LineBorder(new Color(238,238,238), 2);
 
         ImageIcon starIcon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/star.png");
         starButton = new JButton(starIcon);
