@@ -71,4 +71,6 @@ public interface ICanvasClient extends Remote, Serializable {
     boolean allowJoin() throws RemoteException;
 
     void setAllowed(boolean permission) throws RemoteException;
+
+//    void clearChatHistory() throws RemoteException;
 }

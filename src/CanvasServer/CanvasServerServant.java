@@ -54,6 +54,8 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
             if (allowed) {
                 addClientToList(CanvasClient);
                 CanvasClient.setAllowed(true);
+            } else {
+                CanvasClient.setAllowed(false);
             }
         }
         // Update the client lists for all clients
@@ -196,6 +198,7 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
         Set<ICanvasClient> clientSetCopy = new HashSet<>(clientSet);
         for (ICanvasClient client : clientSetCopy) {
             client.shutDownUI("managerQuit");
+//            client.clearChatHistory();
         }
         // reset the manager to avoid the next client cannot join
         hasManager = false;

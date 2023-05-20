@@ -762,6 +762,11 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         this.allowed = permission;
     }
 
+//    @Override
+//    public void clearChatHistory() throws RemoteException {
+//        chatList.clear();
+//    }
+
 
     @Override
     public void updateCanvas(ICanvasStatus CanvasStatus) throws RemoteException {
@@ -1022,12 +1027,15 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
             } catch(RemoteException e) {
                 System.err.println("Error registering with remote server");
             }
-            //launch the White Board GUI and start drawing
-            client.initialize(canvasServer);
             //do not get the permission from manager
             if(!client.allowJoin()) {
                 canvasServer.kickUser(client.getClientName());
+                JOptionPane.showMessageDialog(null, "Sorry, you are not allowed to join!");
+                System.exit(0);
             }
+            //launch the White Board GUI and start drawing
+            client.initialize(canvasServer);
+
         } catch(ConnectException e) {
             System.err.println("Server is down or wrong IP address or  Port number.");
             e.printStackTrace();
