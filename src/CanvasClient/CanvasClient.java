@@ -434,9 +434,13 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                                     canvasServer.kickUser(selectedName);
                                     // notify JList to update its view
                                     updateUserList(canvasServer.getUsers());
-                                    // notify JList to update its view
-                                    clientJlist.setModel(clientList);
-                                    clientJlist.updateUI();
+
+                                    SwingUtilities.invokeLater(() -> {
+                                        // notify JList to update its view
+                                        clientJlist.setModel(clientList);
+                                        clientJlist.updateUI();
+                                    });
+
                                 } catch (IOException ex) {
                                     System.err.println("There is an IO error.");
                                 }
@@ -451,6 +455,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         }
 
 
+
         // create a chatbox with a send button
         chatInputBox = new JList<>(chatList);
         msgArea = new JScrollPane(chatInputBox);
@@ -459,6 +464,18 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         JTextField inputArea = new JTextField();
         inputArea.setMaximumSize(new Dimension(870, 140));
 
+        // Add the chat history
+        try {
+            ArrayList<String> chatHistory = canvasServer.getChatHistory();
+            for(String message : chatHistory) {
+                this.chatList.addElement(message);
+            }
+        } catch (RemoteException e) {
+            JOptionPane.showMessageDialog(null, "Failed to load chat history from the server"
+                    , "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+
         JButton sendBtn = new JButton("Send"); //addMouseListener here, Directly call the server to broadcast message
 
         sendBtn.addMouseListener(new MouseAdapter() {
@@ -466,9 +483,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                 if(!inputArea.getText().equals("")) {
                     try {
                         String newMessage = clientName + ": " + inputArea.getText();
-                        canvasServer.addChat(newMessage);
-                        // Add new message to chatList
-                        chatList.addElement(newMessage);
+                        canvasServer.updateServerChatBox(newMessage);
                         // Set the scrollpane to show the updated chat message
                         SwingUtilities.invokeLater(() -> {
                             JScrollBar vertical = msgArea.getVerticalScrollBar();
@@ -682,11 +697,16 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                         try {
                             canvasServer.kickUser(clientName);
                             updateUserList(canvasServer.getUsers());
-                            // notify JList to update its view
-                            clientJlist.setModel(clientList);
-                            clientJlist.updateUI();
+
+                            SwingUtilities.invokeLater(() -> {
+                                // notify JList to update its view
+                                clientJlist.setModel(clientList);
+                                clientJlist.updateUI();
+                            });
+
                         } catch (RemoteException e) {
-                            JOptionPane.showMessageDialog(null, "Canvas server is down, please save and exit.");
+                            JOptionPane.showMessageDialog(null, "Canvas server is down, " +
+                                    "please save and exit.");
                         } finally {
                             System.exit(0);
                         }
@@ -694,6 +714,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                 }
             }
         });
+
     }
 
 
@@ -832,8 +853,17 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
 
     @Override
     public void updateChatBox(String chatMsg) throws RemoteException {
+        // Add new message to chatList
         this.chatList.addElement(chatMsg);
+        // Set the scrollpane to show the updated chat message
+        SwingUtilities.invokeLater(() -> {
+            JScrollBar vertical = msgArea.getVerticalScrollBar();
+            vertical.setValue(vertical.getMaximum());
+            // Force UI to update
+            chatInputBox.updateUI();
+        });
     }
+
 
     @Override
     public void clearCanvas() throws RemoteException {

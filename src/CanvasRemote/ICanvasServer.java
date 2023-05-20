@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -55,7 +56,9 @@ public interface ICanvasServer extends Remote, Serializable {
 
     List<ICanvasClient> updateUserList() throws RemoteException;
 
-    void addChat(String s) throws RemoteException;
+//    void addChat(String s) throws RemoteException;
 
     byte[] getManagerImage() throws IOException;
+
+    ArrayList<String> getChatHistory() throws RemoteException;
 }

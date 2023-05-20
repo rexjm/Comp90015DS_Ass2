@@ -19,6 +19,7 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
     private Set<ICanvasClient> clientSet;
     private ICanvasClient manager;
     private boolean hasManager;
+    private ArrayList<String> chatHistory = new ArrayList<>();
 
     protected CanvasServerServant() throws RemoteException {
         this.clientSet = new HashSet<ICanvasClient>();
@@ -146,10 +147,10 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
         return null;
     }
 
-    @Override
-    public void addChat(String s) throws RemoteException {
-
-    }
+//    @Override
+//    public void addChat(String s) throws RemoteException {
+//
+//    }
 
     @Override
     public byte[] getManagerImage() throws IOException {
@@ -174,6 +175,7 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
 
     @Override
     public void updateServerChatBox(String chatMsg) throws RemoteException {
+        chatHistory.add(chatMsg);
         for (ICanvasClient client : clientSet) {
             try {
                 client.updateChatBox(chatMsg);
@@ -181,6 +183,10 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
                 System.out.println(new RuntimeException(e));
             }
         }
+    }
+
+    public ArrayList<String> getChatHistory() throws RemoteException {
+        return chatHistory;
     }
 
     // If the manager closes the application
