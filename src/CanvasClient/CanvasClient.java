@@ -3,7 +3,6 @@ package CanvasClient;
 import CanvasRemote.ICanvasClient;
 import CanvasRemote.ICanvasServer;
 import CanvasRemote.ICanvasStatus;
-//import jdk.nashorn.internal.codegen.ConstantData;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -34,7 +33,6 @@ import static javax.swing.GroupLayout.Alignment.CENTER;
 
 public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
 
-    // The stub of the canvas server.
     static ICanvasServer CanvasServer;
     static JFrame frame;
     private CanvasWhiteboard canvasWhiteboard;
@@ -56,13 +54,16 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
     private List<JButton> colorButtons = new ArrayList<>();
     private boolean hasSaved;
     private JList<String> clientJlist;
+    private boolean isModified = false;
 
 
-    protected CanvasClient() throws RemoteException {
+
+    protected CanvasClient(ICanvasServer canvasServer) throws RemoteException {
         this.clientList = new DefaultListModel<>();
         this.chatList = new DefaultListModel<>();
         this.isManager = false;
         this.allowed = false;
+        this.CanvasServer = canvasServer;
     }
 
 
@@ -113,6 +114,8 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
 
             BufferedImage openedImage = ImageIO.read(fileToOpen);
             canvasWhiteboard.showImage(openedImage);
+
+            // synchronize to the clients
             ByteArrayOutputStream openedImageByte = new ByteArrayOutputStream();
 
             if (fileName.endsWith(".png")) {
@@ -126,9 +129,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                 CanvasServer.updateImage(openedImageByte.toByteArray());
             } catch (IOException e) {
                 e.printStackTrace();
-                // Handle the exception as appropriate
             }
-
         }
     }
 
@@ -147,24 +148,28 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                     }
                 }
             }
-
+            // advanced features
             if (source.equals(newButton)) {
-                if (isManager) {
-                    // should notice the server to clean all client's canvas
-                    boolean clean = canvasWhiteboard.askClean();
-                    if (clean) {
+                boolean openNew = canvasWhiteboard.askClean();
+                if (openNew) {
+                    try {
+                        saveFile();
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    if (hasSaved == true) {
+                        canvasWhiteboard.cleanAll();
+                        hasSaved = false;
+                        // notice the server to clean all client's canvas
                         try {
-                            saveFile();
-                        } catch (IOException ex) {
+                            CanvasServer.cleanAllCanvas();
+                        } catch (RemoteException ex) {
                             throw new RuntimeException(ex);
-                        }
-                        if (hasSaved == true) {
-                            canvasWhiteboard.cleanAll();
-                            hasSaved = false;
                         }
                     }
                 }
-            } else if (source.equals(openButton)) {
+            }
+            else if (source.equals(openButton)) {
                 try {
                     openNewFile();
                 } catch (IOException ex) {
@@ -182,9 +187,9 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                 } catch (IOException ex) {
                     System.out.println(ex);
                 }
-            } else if (source.equals(kickUserButton)) {
-
-            } else if (source.equals(lineButton)) {
+            }
+            // click the drawing button
+            else if (source.equals(lineButton)) {
                 canvasWhiteboard.setLineMode();
                 lineButton.setBorder(border);
             } else if (source.equals(circleButton)) {
@@ -206,7 +211,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                 canvasWhiteboard.setTextMode();
                 textButton.setBorder(border);
             }
-
+            // click the color button
             else if (source.equals(blueBtn)) {
                 canvasWhiteboard.setBlue();
             } else if (source.equals(cyanBtn)) {
@@ -870,10 +875,23 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
     }
 
 
-    @Override
+//    @Override
     public void clearCanvas() throws RemoteException {
-        if (this.isManager == false)
-            this.canvasWhiteboard.cleanAll();
+        // call the clean function in whiteboard
+        canvasWhiteboard.cleanAll();
+
+    }
+
+    @Override
+    public void syncImage(byte[] imageBytes) throws RemoteException {
+        try {
+            // Convert byte array to BufferedImage
+            BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageBytes));
+            // Show the image
+            canvasWhiteboard.showImage(image);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -927,11 +945,6 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         }else {
             return false;
         }
-    }
-
-    @Override
-    public void cleanCanvas() throws RemoteException {
-
     }
 
     @Override
@@ -993,7 +1006,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
             //Look up the Canvas Server from the RMI name registry
             ICanvasServer canvasServer = (ICanvasServer) Naming.lookup(serverAddress);
             System.out.println("Connected to the server!");
-            ICanvasClient client =  new CanvasClient();
+            ICanvasClient client =  new CanvasClient(canvasServer);
             //show user register GUI and register the username to server
             boolean validName = false;
             String client_name = "";

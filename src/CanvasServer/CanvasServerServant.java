@@ -125,23 +125,18 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
 
     // Once the manager creates a new whiteboard, all clients will clear their canvas
     @Override
-    public void openNewCanvas() throws RemoteException {
+    public void cleanAllCanvas() throws RemoteException {
         for (ICanvasClient client : clientSet) {
-            client.cleanCanvas();
+            client.clearCanvas();
         }
     }
 
-    public byte[] updateImage(byte[] toByteArray) throws IOException {
-        byte[] image = null;
+    public void updateImage(byte[] toByteArray) throws IOException {
         for (ICanvasClient client : clientSet) {
-            if (client.isClientManager()) {
-                image = client.getImage();
+            if (!client.isClientManager()) {
+                client.syncImage(toByteArray);
             }
         }
-        if (image == null) {
-            throw new IOException("Unable to send image");
-        }
-        return image;
     }
 
     @Override
@@ -166,14 +161,6 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
         return image;
     }
 
-    @Override
-    public void openNewImage(byte[] image) throws IOException {
-        for (ICanvasClient client : clientSet) {
-            if (!client.isClientManager()) {
-                client.loadNewImage(image);
-            }
-        }
-    }
 
     @Override
     public void updateServerChatBox(String chatMsg) throws RemoteException {

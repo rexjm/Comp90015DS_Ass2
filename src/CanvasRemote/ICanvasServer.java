@@ -39,11 +39,10 @@ public interface ICanvasServer extends Remote, Serializable {
     byte[] loadExistCanvas() throws RemoteException;
 
     // when the manager of the whiteboard creates a new whiteboard
-    void openNewCanvas() throws RemoteException;
+    void cleanAllCanvas() throws RemoteException;
 
     // when the manager of the whiteboard opens a new image
 
-    void openNewImage(byte[] image) throws IOException;
 
     // update the chat box when a new user join
 
@@ -52,7 +51,7 @@ public interface ICanvasServer extends Remote, Serializable {
     // when the manager quits, application terminate
     void ManagerQuit() throws IOException;
 
-    byte[] updateImage(byte[] toByteArray) throws IOException;
+    void updateImage(byte[] toByteArray) throws IOException;
 
     List<ICanvasClient> updateUserList() throws RemoteException;
 

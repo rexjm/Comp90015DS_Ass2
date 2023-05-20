@@ -426,6 +426,9 @@ public class CanvasWhiteboard extends JComponent {
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics.setPaint(color);
 
+        // revalidate the component to indicate that the preferred size might have changed
+        revalidate();
+
         // When calling the repaint() method, Swing automatically calls the paintComponent
         // method to repaint the component
         repaint();

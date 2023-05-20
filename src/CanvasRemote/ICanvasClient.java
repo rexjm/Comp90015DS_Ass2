@@ -33,7 +33,7 @@ public interface ICanvasClient extends Remote, Serializable {
 //    void loadExistingCanvas(byte[] canvasData) throws RemoteException;
 
     // Clear the client's canvas when the manager creates a new whiteboard
-    void clearCanvas() throws RemoteException;
+//    void clearCanvas() throws RemoteException;
 
     // Load a new image on the client's canvas when the manager opens a new image
     void loadNewImage(byte[] imageData) throws IOException;
@@ -60,8 +60,6 @@ public interface ICanvasClient extends Remote, Serializable {
 
     boolean askManagerPermission(String name) throws RemoteException;
 
-    void cleanCanvas() throws RemoteException;
-
     byte[] getImage() throws IOException;
 
     void shutDownUI(String kick) throws RemoteException;
@@ -71,6 +69,10 @@ public interface ICanvasClient extends Remote, Serializable {
     boolean allowJoin() throws RemoteException;
 
     void setAllowed(boolean permission) throws RemoteException;
+
+    void clearCanvas() throws RemoteException;
+
+    void syncImage(byte[] image) throws RemoteException;
 
 //    void clearChatHistory() throws RemoteException;
 }
