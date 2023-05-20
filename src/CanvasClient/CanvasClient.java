@@ -8,8 +8,6 @@ import CanvasRemote.ICanvasStatus;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +15,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -34,7 +28,6 @@ import java.rmi.RemoteException;
 import java.rmi.server.ServerNotActiveException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Hashtable;
-import java.util.Set;
 
 import static javax.swing.GroupLayout.Alignment.BASELINE;
 import static javax.swing.GroupLayout.Alignment.CENTER;
@@ -673,7 +666,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                             JOptionPane.YES_NO_OPTION,
                             JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
                         try {
-                            canvasServer.terminateApp();
+                            canvasServer.ManagerQuit();
 
                         } catch (IOException e) {
                             System.err.println("There is an IO error");
@@ -883,10 +876,10 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
 //        return imageArray.toByteArray();
 //    }
 
-    @Override
-    public void terminateApp() throws RemoteException {
-
-    }
+//    @Override
+//    public void terminateApp() throws RemoteException {
+//
+//    }
 
 
     @Override
@@ -914,7 +907,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
     }
 
     @Override
-    public void shutDownUI() throws RemoteException {
+    public void shutDownUI(String reason) throws RemoteException {
         //if manager does not give permission
         if(!this.allowed) {
             Thread t = new Thread(new Runnable(){
@@ -924,18 +917,26 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                     System.exit(0);
                 }
             });
+            // the thread is displaying a message to the user and then stopping the application
             t.start();
             return;
         }
         //if kicked out or manager quit
         Thread t = new Thread(new Runnable(){
             public void run(){
-                JOptionPane.showMessageDialog(frame, "The manager has quit.\n or you have been removed.\n" +
-                                "Your application will be closed.",
-                        "Error", JOptionPane.ERROR_MESSAGE);
+                String message;
+                if (reason.equals("kick")) {
+                    message = "You have been removed.\nYour application will be closed.";
+                } else if (reason.equals("managerQuit")) {
+                    message = "The manager has quit.\nYour application will be closed.";
+                } else {
+                    message = "Unknown reason.\nYour application will be closed.";
+                }
+                JOptionPane.showMessageDialog(frame, message, "Error", JOptionPane.ERROR_MESSAGE);
                 System.exit(0);
             }
         });
+        // the thread is displaying a message to the user and then stopping the application
         t.start();
     }
 

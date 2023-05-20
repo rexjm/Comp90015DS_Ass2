@@ -85,7 +85,7 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
             if (client.getClientName().equals(clientName)) {
                 clientsToBeRemoved.add(client);
                 System.out.println("User" + clientName + " left!");
-                client.shutDownUI();
+                client.shutDownUI("kick");
             }
         }
         clientSet.removeAll(clientsToBeRemoved);
@@ -94,20 +94,20 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
         }
     }
 
-
-    // if the user quits
-    @Override
-    public void removeUser(String clientName) throws RemoteException {
-        for (ICanvasClient client : clientSet) {
-            if (client.getClientName().equals(clientName)) {
-                this.clientSet.remove(client);
-                System.out.println("User" + clientName + "quits!");
-            }
-        }
-        for (ICanvasClient client : clientSet) {
-            client.updateUserList(getUsers());
-        }
-    }
+//
+//    // if the user quits
+//    @Override
+//    public void removeUser(String clientName) throws RemoteException {
+//        for (ICanvasClient client : clientSet) {
+//            if (client.getClientName().equals(clientName)) {
+//                this.clientSet.remove(client);
+//                System.out.println("User" + clientName + "quits!");
+//            }
+//        }
+//        for (ICanvasClient client : clientSet) {
+//            client.updateUserList(getUsers());
+//        }
+//    }
 
     @Override
     public List<ICanvasClient> getUsers() throws RemoteException {
@@ -185,13 +185,18 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
 
     // If the manager closes the application
     @Override
-    public void terminateApp() throws IOException {
-        for (ICanvasClient client : clientSet) {
-            clientSet.remove(client);
-            client.shutDownUI();
+    public void ManagerQuit() throws IOException {
+        // Create a copy of clientSet to prevent a ConcurrentModificationException
+        Set<ICanvasClient> clientSetCopy = new HashSet<>(clientSet);
+        for (ICanvasClient client : clientSetCopy) {
+            client.shutDownUI("managerQuit");
         }
+        // reset the manager to avoid the next client cannot join
+        hasManager = false;
+        clientSet.clear();
         System.out.println("The manager closes the application!");
     }
+
 
 
     // Add a new client to the client set

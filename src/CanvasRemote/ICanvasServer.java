@@ -29,7 +29,7 @@ public interface ICanvasServer extends Remote, Serializable {
     void kickUser(String clientName) throws RemoteException;
 
     // when user self-exit, or t
-    void removeUser(String clientName) throws RemoteException;
+//    void removeUser(String clientName) throws RemoteException;
 
     // getter function for clients
     List<ICanvasClient> getUsers() throws RemoteException;
@@ -49,7 +49,7 @@ public interface ICanvasServer extends Remote, Serializable {
     void updateServerChatBox(String chatMsg) throws RemoteException;
 
     // when the manager quits, application terminate
-    void terminateApp() throws IOException;
+    void ManagerQuit() throws IOException;
 
     byte[] updateImage(byte[] toByteArray) throws IOException;
 

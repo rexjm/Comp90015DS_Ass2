@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
-import java.util.Set;
 
 /**
  * RMI Remote interface - must be shared between client and server.
@@ -57,7 +56,7 @@ public interface ICanvasClient extends Remote, Serializable {
     ///////
 
     // Terminate the client application when the manager quits
-    void terminateApp() throws RemoteException;
+//    void terminateApp() throws RemoteException;
 
     boolean askManagerPermission(String name) throws RemoteException;
 
@@ -65,7 +64,7 @@ public interface ICanvasClient extends Remote, Serializable {
 
     byte[] getImage() throws IOException;
 
-    void shutDownUI() throws RemoteException;
+    void shutDownUI(String kick) throws RemoteException;
 
     void initialize(ICanvasServer canvasServer) throws RemoteException;
 
