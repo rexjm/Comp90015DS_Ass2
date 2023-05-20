@@ -77,17 +77,23 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
 
     @Override
     public void kickUser(String clientName) throws RemoteException {
+        // If traverse clientSet while trying to delete elements from it, it will throw
+        // ConcurrentModificationException. so it should add the element to remove to another list during the traversal,
+        //  then remove it when the traversal is over.
+        List<ICanvasClient> clientsToBeRemoved = new ArrayList<>();
         for (ICanvasClient client : clientSet) {
             if (client.getClientName().equals(clientName)) {
-                this.clientSet.remove(client);
-                System.out.println("User" + clientName + " has been removed!");
+                clientsToBeRemoved.add(client);
+                System.out.println("User" + clientName + " will be removed!");
                 client.shutDownUI();
             }
         }
+        clientSet.removeAll(clientsToBeRemoved);
         for (ICanvasClient client : clientSet) {
             client.updateUserList(getUsers());
         }
     }
+
 
     // if the user quits
     @Override

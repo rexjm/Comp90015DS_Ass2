@@ -62,6 +62,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
     private JButton[] leftToolButtons;
     private List<JButton> colorButtons = new ArrayList<>();
     private boolean hasSaved;
+    private JList<String> clientJlist;
 
 
     protected CanvasClient() throws RemoteException {
@@ -421,7 +422,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         kickUserButton.setToolTipText("Kick out the selected user");
         kickUserButton.addActionListener(actionListener);
 
-        JList<String> clientJlist = new JList<>(clientList);
+        clientJlist = new JList<>(clientList);
         JScrollPane currUsers = new JScrollPane(clientJlist);
         currUsers.setMinimumSize(new Dimension(100, 150));
 
@@ -438,7 +439,11 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                             if (dialogResult == JOptionPane.YES_OPTION) {
                                 try {
                                     canvasServer.kickUser(selectedName);
-                                    updateUserList(canvasServer.updateUserList());
+                                    // notify JList to update its view
+                                    updateUserList(canvasServer.getUsers());
+                                    // notify JList to update its view
+                                    clientJlist.setModel(clientList);
+                                    clientJlist.updateUI();
                                 } catch (IOException ex) {
                                     System.err.println("There is an IO error.");
                                 }
@@ -695,6 +700,8 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         });
     }
 
+
+
     private void setPreferredSize(Dimension colorBtnDim, JButton greenBtn, JButton redBtn, JButton orangeBtn, JButton pinkBtn, JButton darkgreyBtn, JButton yellowBtn, JButton blackBtn, JButton whiteBtn) {
         greenBtn.setPreferredSize(colorBtnDim);
         redBtn.setPreferredSize(colorBtnDim);
@@ -758,7 +765,6 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
 
         //set canvas painting color (Sets the Paint attribute for the Graphics2D context.)
         canvasWhiteboard.getGraphic().setPaint(CanvasStatus.getColor());
-
         if (CanvasStatus.getState().equals("drawing")) {
             if (CanvasStatus.getMode().equals("eraser")) {
                 // Constructs a solid BasicStroke with the specified line width and with default values for the cap

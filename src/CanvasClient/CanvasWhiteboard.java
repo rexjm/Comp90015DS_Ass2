@@ -67,6 +67,7 @@ public class CanvasWhiteboard extends JComponent {
                 if (graphics != null) {
                     if (mode.equals("draw")) {
                         //newShape. makeLine (startPt, endPt);
+                        graphics.setPaint(color);
                         shape = makeLine(shape, startPt, endPt);
                         startPt = endPt;
                         try {
@@ -88,21 +89,27 @@ public class CanvasWhiteboard extends JComponent {
                         }
                     } else if (mode.equals("line")) {
                         //when drawing, draw the previous image then add to it
+                        graphics.setPaint(color);
                         drawPreviousCanvas();
                         shape = makeLine(shape, startPt, endPt);
                     } else if (mode.equals("rect")) {
+                        graphics.setPaint(color);
                         drawPreviousCanvas();
                         shape = makeRect(shape, startPt, endPt);
                     } else if (mode.equals("circle")) {
+                        graphics.setPaint(color);
                         drawPreviousCanvas();
                         shape = makeCircle(shape, startPt, endPt);
                     } else if (mode.equals("oval")) {
+                        graphics.setPaint(color);
                         drawPreviousCanvas();
                         shape = makeOval(shape, startPt, endPt);
                     } else if (mode.equals("star")) {
+                        graphics.setPaint(color);
                         drawPreviousCanvas();
                         shape = makeStar(shape, startPt, calculateDistance(startPt, endPt));
                     } else if (mode.equals("text")) {
+                        graphics.setPaint(color);
                         drawPreviousCanvas();
                         graphics.setFont (new Font ("TimesRoman", Font.PLAIN, 20));
                         graphics.drawString("Enter text here", endPt.x, endPt.y) ;
@@ -202,7 +209,7 @@ public class CanvasWhiteboard extends JComponent {
                     image = ImageIO.read(new ByteArrayInputStream(rawImage));
                     graphics = (Graphics2D) image.getGraphics();
                     graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    graphics.setPaint(color);
+                    graphics.setPaint(getCurrColor());
                 } catch (IOException e) {
                     System.err.println("Fail receiving image!");
                 }
@@ -210,7 +217,7 @@ public class CanvasWhiteboard extends JComponent {
         }
         g.drawImage(image, 0, 0, null);
     }
-    public Color gerCurrColor() {
+    public Color getCurrColor() {
         return color;
     }
     public String gerCurrMode() {
@@ -231,7 +238,8 @@ public class CanvasWhiteboard extends JComponent {
     }
 
     //save the image
-    public RenderedImage saveCanvas () {
+    public RenderedImage
+    saveCanvas () {
         ColorModel cm = image.getColorModel();
         WritableRaster raster = image.copyData(null);
         //Copy to previousCanvas so user can continue editing after saving the image without affecting the saved image
