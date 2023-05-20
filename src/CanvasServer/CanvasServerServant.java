@@ -193,18 +193,24 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
 
     // If the manager closes the application
     @Override
+
     public void ManagerQuit() throws IOException {
         // Create a copy of clientSet to prevent a ConcurrentModificationException
         Set<ICanvasClient> clientSetCopy = new HashSet<>(clientSet);
         for (ICanvasClient client : clientSetCopy) {
             client.shutDownUI("managerQuit");
-//            client.clearChatHistory();
         }
+        // Clear the clientSet
+        // When a client disconnects, it is necessary for the server to clean up any references and resources
+        // associated with that client. If this is not done, it could cause issues with future connections
+        clientSet.clear();
         // reset the manager to avoid the next client cannot join
         hasManager = false;
-        chatHistory = null;
+        // Re-initialize the chat history, if set to null, a NullPointerException could be thrown
+        chatHistory = new ArrayList<String>();
         System.out.println("The manager closes the application!");
     }
+
 
 
 

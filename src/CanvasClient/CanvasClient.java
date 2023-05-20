@@ -945,35 +945,33 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
     public void shutDownUI(String reason) throws RemoteException {
         //if manager does not give permission
         if(!this.allowed) {
-            Thread t = new Thread(new Runnable(){
-                public void run(){
-                    JOptionPane.showMessageDialog(null, "Sorry, You were not grant access to the shared whiteboard." + "\n",
-                            "Warning", JOptionPane.WARNING_MESSAGE);
-                    System.exit(0);
-                }
-            });
-            // the thread is displaying a message to the user and then stopping the application
-            t.start();
+            showShutdownMessageAndExit("Sorry, You were not granted access to the shared whiteboard.");
             return;
         }
+
         //if kicked out or manager quit
-        Thread t = new Thread(new Runnable(){
-            public void run(){
-                String message;
-                if (reason.equals("kick")) {
-                    message = "You have been removed.\nYour application will be closed.";
-                } else if (reason.equals("managerQuit")) {
-                    message = "The manager has quit.\nYour application will be closed.";
-                } else {
-                    message = "Unknown reason.\nYour application will be closed.";
-                }
-                JOptionPane.showMessageDialog(frame, message, "Error", JOptionPane.ERROR_MESSAGE);
-                System.exit(0);
-            }
-        });
-        // the thread is displaying a message to the user and then stopping the application
-        t.start();
+        String message;
+        switch (reason) {
+            case "kick":
+                message = "You have been removed.\nYour application will be closed.";
+                break;
+            case "managerQuit":
+                message = "The manager has quit.\nYour application will be closed.";
+                break;
+            default:
+                message = "Unknown reason.\nYour application will be closed.";
+        }
+
+        showShutdownMessageAndExit(message);
     }
+
+    private void showShutdownMessageAndExit(String message) {
+        SwingUtilities.invokeLater(() -> {
+            JOptionPane.showMessageDialog(frame, message, "Error", JOptionPane.ERROR_MESSAGE);
+            System.exit(0);
+        });
+    }
+
 
     private ImageIcon resizeIcon(ImageIcon icon, int width, int height) {
         Image img = icon.getImage();
@@ -1022,6 +1020,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                     }
                 }
             }
+
             // if the name is valid, try to add it, need to get manager's permission
             client.setClientName(client_name);
             // add the user to the client list in server
