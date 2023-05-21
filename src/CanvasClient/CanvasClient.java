@@ -29,12 +29,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.rmi.ConnectException;
 import java.rmi.Naming;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.server.ServerNotActiveException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Hashtable;
 
@@ -75,77 +72,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         this.CanvasServer = canvasServer;
     }
 
-
-
-    private void saveAsFile() throws IOException{
-        FileDialog saveAsDialog = new FileDialog(frame, "Save an image.", FileDialog.SAVE);
-        saveAsDialog.setVisible(true);
-        if (saveAsDialog.getFile() != null) {
-            this.fileName = saveAsDialog.getFile();
-            this.filePath = saveAsDialog.getDirectory();
-            ImageIO.write(canvasWhiteboard.saveCanvas(), "png", new File(filePath + fileName));
-            this.hasSaved = true;
-        }
-    }
-
-    private void saveFile() throws IOException {
-        if (!hasSaved) {
-            JOptionPane.showMessageDialog(null, "Please save as a file firstly!");
-            saveAsFile();
-        } else {
-            if (fileName != null && filePath != null) {
-                ImageIO.write(canvasWhiteboard.saveCanvas(), "png", new File(filePath + fileName));
-                JOptionPane.showMessageDialog(null, "Save successfully!");
-            } else {
-                JOptionPane.showMessageDialog(null, "Please save as a file firstly!");
-                saveAsFile();
-            }
-        }
-    }
-
-
-
-    private void openNewFile() throws IOException {
-        boolean isModified;
-        isModified = canvasWhiteboard.isModified();
-        if (isModified) {
-            try {
-                saveFile();
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        }
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Open an existing image.");
-        int userSelection = fileChooser.showOpenDialog(frame);
-        if (userSelection == JFileChooser.APPROVE_OPTION) {
-            hasSaved = true;
-            File fileToOpen = fileChooser.getSelectedFile();
-            this.fileName = fileToOpen.getName();
-            // Get the directory path, not the complete file path
-            this.filePath = fileToOpen.getParent() + "/";
-
-            BufferedImage openedImage = ImageIO.read(fileToOpen);
-            canvasWhiteboard.showImage(openedImage);
-
-            // synchronize to the clients
-            ByteArrayOutputStream openedImageByte = new ByteArrayOutputStream();
-
-            if (fileName.endsWith(".png")) {
-                ImageIO.write(openedImage, "png", openedImageByte);
-            } else if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) {
-                ImageIO.write(openedImage, "jpeg", openedImageByte);
-            } else {
-                throw new IllegalArgumentException("Unsupported file format: " + fileName);
-            }
-            try {
-                CanvasServer.updateImage(openedImageByte.toByteArray());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
+    // Create the actionListener for all buttons
     ActionListener actionListener = new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -182,7 +109,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
                         } catch (IOException ex) {
                             throw new RuntimeException(ex);
                         }
-                        if (hasSaved == true) {
+                        if (hasSaved) {
                             canvasWhiteboard.cleanAll();
                             hasSaved = false;
                             // notice the server to clean all client's canvas
@@ -382,43 +309,43 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
 
         ImageIcon starIcon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/star.png");
         starButton = new JButton(starIcon);
-        starButton.setIcon(resizeIcon(starIcon, 60, 60));
+        starButton.setIcon(resizeIcon(starIcon));
         starButton.setToolTipText("Draw a star");
         starButton.setBorder(border);
         starButton.addActionListener(actionListener);
         ImageIcon lineIcon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/line.png");
         lineButton = new JButton(lineIcon);
-        lineButton.setIcon(resizeIcon(lineIcon, 60, 60));
+        lineButton.setIcon(resizeIcon(lineIcon));
         lineButton.setToolTipText("Draw line");
         lineButton.setBorder(border);
         lineButton.addActionListener(actionListener);
         ImageIcon recIcon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/rectangle.png");
         rectangleButton = new JButton(recIcon);
-        rectangleButton.setIcon(resizeIcon(recIcon, 60, 60));
+        rectangleButton.setIcon(resizeIcon(recIcon));
         rectangleButton.setToolTipText("Draw rectangle");
         rectangleButton.setBorder(border);
         rectangleButton.addActionListener(actionListener);
         ImageIcon cirIcon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/circle.png");
         circleButton = new JButton(cirIcon);
-        circleButton.setIcon(resizeIcon(cirIcon, 60, 60));
+        circleButton.setIcon(resizeIcon(cirIcon));
         circleButton.setToolTipText("Draw circle");
         circleButton.setBorder(border);
         circleButton.addActionListener(actionListener);
         ImageIcon ovalIcon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/oval.png");
         ovalButton = new JButton(ovalIcon);
-        ovalButton.setIcon(resizeIcon(ovalIcon, 60, 60));
+        ovalButton.setIcon(resizeIcon(ovalIcon));
         ovalButton.setToolTipText("Draw oval");
         ovalButton.setBorder(border);
         ovalButton.addActionListener(actionListener);
         ImageIcon TBIcon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/Text-Box.png");
         textButton = new JButton(TBIcon);
-        textButton.setIcon(resizeIcon(TBIcon, 60, 60));
+        textButton.setIcon(resizeIcon(TBIcon));
         textButton.setToolTipText("Text box");
         textButton.setBorder(border);
         textButton.addActionListener(actionListener);
         ImageIcon eraserIcon = new ImageIcon("/Users/rex/Desktop/Comp90015 DS/Ass2/Ass2_Canvas/src/Icon/eraser.png");
         eraserButton = new JButton(eraserIcon);
-        eraserButton.setIcon(resizeIcon(eraserIcon, 60, 60));
+        eraserButton.setIcon(resizeIcon(eraserIcon));
         eraserButton.setToolTipText("Eraser");
         eraserButton.setBorder(border);
         eraserButton.addActionListener(actionListener);
@@ -787,71 +714,145 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
 
 
 
+    private void saveAsFile() throws IOException{
+        FileDialog saveAsDialog = new FileDialog(frame, "Save an image.", FileDialog.SAVE);
+        saveAsDialog.setVisible(true);
+        if (saveAsDialog.getFile() != null) {
+            this.fileName = saveAsDialog.getFile();
+            this.filePath = saveAsDialog.getDirectory();
+            ImageIO.write(canvasWhiteboard.saveCanvas(), "png", new File(filePath + fileName));
+            this.hasSaved = true;
+        }
+    }
+
+    private void saveFile() throws IOException {
+        if (!hasSaved) {
+            JOptionPane.showMessageDialog(null, "Please save as a file firstly!");
+            saveAsFile();
+        } else {
+            if (fileName != null && filePath != null) {
+                ImageIO.write(canvasWhiteboard.saveCanvas(), "png", new File(filePath + fileName));
+                JOptionPane.showMessageDialog(null, "Save successfully!");
+            } else {
+                JOptionPane.showMessageDialog(null, "Please save as a file firstly!");
+                saveAsFile();
+            }
+        }
+    }
+
+
+    private void openNewFile() throws IOException {
+        boolean isModified;
+        isModified = canvasWhiteboard.isModified();
+        if (isModified) {
+            try {
+                saveFile();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Open an existing image.");
+        int userSelection = fileChooser.showOpenDialog(frame);
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            hasSaved = true;
+            File fileToOpen = fileChooser.getSelectedFile();
+            this.fileName = fileToOpen.getName();
+            // Get the directory path, not the complete file path
+            this.filePath = fileToOpen.getParent() + "/";
+
+            BufferedImage openedImage = ImageIO.read(fileToOpen);
+            canvasWhiteboard.showImage(openedImage);
+
+            // synchronize to the clients
+            ByteArrayOutputStream openedImageByte = new ByteArrayOutputStream();
+
+            if (fileName.endsWith(".png")) {
+                ImageIO.write(openedImage, "png", openedImageByte);
+            } else if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) {
+                ImageIO.write(openedImage, "jpeg", openedImageByte);
+            } else {
+                throw new IllegalArgumentException("Unsupported file format: " + fileName);
+            }
+            try {
+                CanvasServer.updateImage(openedImageByte.toByteArray());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     @Override
     public void updateCanvas(ICanvasStatus CanvasStatus) throws RemoteException {
         // skip status from himself
         if (CanvasStatus.getName().compareTo(clientName) == 0) {
             return;
         }
-        Shape shape = null;
 
-        if (CanvasStatus.getState().equals("start")) {
-            //Let hashmap startPoint stores the start point of a client and wait for the next draw action
+        Shape shape = null;
+        String state = (String) CanvasStatus.getState();
+        String mode = (String) CanvasStatus.getMode();
+
+        // Start state logic
+        if (state.equals("start")) {
             endPoints.put(CanvasStatus.getName(), CanvasStatus.getEndPoint());
             return;
         }
 
-        //start from the start point of client x
-        Point startPtName = (Point)endPoints.get(CanvasStatus.getName());
-
-        //set canvas painting color (Sets the Paint attribute for the Graphics2D context.)
+        Point startPtName = endPoints.get(CanvasStatus.getName());
         canvasWhiteboard.getGraphic().setPaint(CanvasStatus.getColor());
-        if (CanvasStatus.getState().equals("drawing")) {
-            if (CanvasStatus.getMode().equals("eraser")) {
-                // Constructs a solid BasicStroke with the specified line width and with default values for the cap
-                canvasWhiteboard.getGraphic().setStroke(new BasicStroke(15.0f));// The width
+
+        // Drawing state logic
+        if (state.equals("drawing")) {
+            if (mode.equals("eraser")) {
+                canvasWhiteboard.getGraphic().setStroke(new BasicStroke(15.0f));
             }
-            shape = canvasWhiteboard.makeLine(shape,startPtName, CanvasStatus.getEndPoint());
+            shape = canvasWhiteboard.makeLine(startPtName, CanvasStatus.getEndPoint());
             endPoints.put(CanvasStatus.getName(), CanvasStatus.getEndPoint());
             canvasWhiteboard.getGraphic().draw(shape);
             canvasWhiteboard.repaint();
             return;
         }
 
-        //the mouse is released, so we draw from start point to the broadcast point
-        if (CanvasStatus.getState().equals("end")) {
-            if (CanvasStatus.getMode().equals("draw") || CanvasStatus.getMode().equals("line")) {
-                shape = canvasWhiteboard.makeLine(shape, startPtName, CanvasStatus.getEndPoint());
-            } else if (CanvasStatus.getMode().equals("eraser")) {
-                canvasWhiteboard.getGraphic().setStroke(new BasicStroke(3.0f));
-            } else if (CanvasStatus.getMode().equals("rect")) {
-                shape = canvasWhiteboard.makeRect(shape, startPtName, CanvasStatus.getEndPoint());
-            } else if (CanvasStatus.getMode().equals("circle")) {
-                shape = canvasWhiteboard.makeCircle(shape, startPtName, CanvasStatus.getEndPoint());
-            } else if (CanvasStatus.getMode().equals("oval")) {
-                shape = canvasWhiteboard.makeOval(shape, startPtName, CanvasStatus.getEndPoint());
-            } else if (CanvasStatus.getMode().equals("star")) {
-                int disStar = canvasWhiteboard.calculateDistance(startPtName, CanvasStatus.getEndPoint());
-                shape = canvasWhiteboard.makeStar(shape, startPtName, disStar);
-            } else if (CanvasStatus.getMode().equals("text")) {
-                canvasWhiteboard.getGraphic().setFont(new Font("TimesRoman", Font.PLAIN, 24));
-                canvasWhiteboard.getGraphic().drawString(CanvasStatus.getText(), CanvasStatus.getEndPoint().x, CanvasStatus.getEndPoint().y);
+        // End state logic
+        if (state.equals("end")) {
+            switch (mode) {
+                case "line":
+                    shape = canvasWhiteboard.makeLine(startPtName, CanvasStatus.getEndPoint());
+                    break;
+                case "eraser":
+                    canvasWhiteboard.getGraphic().setStroke(new BasicStroke(3.0f));
+                    break;
+                case "rect":
+                    shape = canvasWhiteboard.makeRect(startPtName, CanvasStatus.getEndPoint());
+                    break;
+                case "circle":
+                    shape = canvasWhiteboard.makeCircle(startPtName, CanvasStatus.getEndPoint());
+                    break;
+                case "oval":
+                    shape = canvasWhiteboard.makeOval(startPtName, CanvasStatus.getEndPoint());
+                    break;
+                case "star":
+                    int disStar = canvasWhiteboard.calculateDistance(startPtName, CanvasStatus.getEndPoint());
+                    shape = canvasWhiteboard.makeStar(startPtName, disStar);
+                    break;
+                case "text":
+                    canvasWhiteboard.getGraphic().setFont(new Font("TimesRoman", Font.PLAIN, 24));
+                    canvasWhiteboard.getGraphic().drawString(CanvasStatus.getText(), CanvasStatus.getEndPoint().x, CanvasStatus.getEndPoint().y);
+                    break;
             }
-            //draw shape if in shape mode: triangle, circle, rectangle
-            if (!CanvasStatus.getMode().equals("text")) {
+
+            if (!mode.equals("text")) {
                 try {
                     canvasWhiteboard.getGraphic().draw(shape);
-                }catch(Exception e) {
-
+                }catch(Exception ignored) {
                 }
             }
-            // If this component is a lightweight component, this method causes a call to
-            // this component's paint method as soon as possible.
+
             canvasWhiteboard.repaint();
-            //once finished drawing remove the start point of client x
             endPoints.remove(CanvasStatus.getName());
         }
     }
+
 
 
 
@@ -902,11 +903,6 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         }
     }
 
-    @Override
-    public void loadNewImage(byte[] imageData) throws IOException {
-        BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageData));
-        this.canvasWhiteboard.showImage(image);
-    }
 
     @Override
     public String getClientName() throws RemoteException {
@@ -933,14 +929,10 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
 
     @Override
     public boolean askManagerPermission(String name) throws RemoteException {
-        if (JOptionPane.showConfirmDialog(frame,
+        return JOptionPane.showConfirmDialog(frame,
                 name + " wants to join. Do you approve?", "Grant permission",
                 JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-            return true;
-        }else {
-            return false;
-        }
+                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION;
     }
 
     @Override
@@ -982,79 +974,113 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
     }
 
 
-    private ImageIcon resizeIcon(ImageIcon icon, int width, int height) {
+    private ImageIcon resizeIcon(ImageIcon icon) {
         Image img = icon.getImage();
-        Image resizedImage = img.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        Image resizedImage = img.getScaledInstance(60, 60, Image.SCALE_SMOOTH);
         return new ImageIcon(resizedImage);
     }
 
-    public static void main(String[] args) throws RemoteException, MalformedURLException, NotBoundException, ServerNotActiveException {
-        if(args.length != 2) {
+    public static void main(String[] args) throws RemoteException {
+        // Check the number of arguments, there should be exactly two: IP and Port
+        if (args.length != 2) {
             throw new IllegalArgumentException("Need exactly two arguments.");
         }
-        try {
-            if(!(args[0].equals("localhost") || !args[0].equals("127.0.0.1"))) {
-                System.err.println("Please enter localhost or 127.0.0.1");
-                return;
-            }
 
-            String serverAddress = "//" + args[0]+":"+args[1] + "/CanvasServer";
-            //Look up the Canvas Server from the RMI name registry
+        String serverIP = args[0];
+        String serverPort = args[1];
+
+        // Validate the IP address
+        if (!("localhost".equals(serverIP) || "127.0.0.1".equals(serverIP))) {
+            System.err.println("Please enter localhost or 127.0.0.1");
+            return;
+        }
+
+        try {
+            // Construct the server address
+            String serverAddress = "//" + serverIP + ":" + serverPort + "/CanvasServer";
+
+            // Look up the Canvas Server from the RMI name registry
             ICanvasServer canvasServer = (ICanvasServer) Naming.lookup(serverAddress);
             System.out.println("Connected to the server!");
-            ICanvasClient client =  new CanvasClient(canvasServer);
-            //show user register GUI and register the username to server
-            boolean validName = false;
-            String client_name = "";
-            while(!validName) {
-                client_name = JOptionPane.showInputDialog("Please type in your name:");
-                if(client_name == null) {
-                    // User clicked cancel, close the window
-                    System.exit(0);
-                } else if(client_name.equals("")) {
-                    JOptionPane.showMessageDialog(null, "Please enter a name!");
-                } else {
-                    validName = true;
-                }
-                // If the user is the first to be added
-                List<ICanvasClient> users = canvasServer.getUsers();
-                if (users != null) {
-                    for (ICanvasClient c : users) {
-                        if (c != null) {
-                            if (client_name.equals(c.getClientName()) || c.getClientName().equals("[Manager] " + client_name)) {
-                                validName = false;
-                                JOptionPane.showMessageDialog(null, "The name is taken, think a different name!");
-                            }
-                        }
-                    }
-                }
+
+            // Initialize a new client
+            ICanvasClient client = new CanvasClient(canvasServer);
+
+            // Ask user for a unique name
+            String clientName = promptForUserName(canvasServer);
+            if (clientName == null) {
+                // If user cancelled the prompt, close the application
+                System.exit(0);
             }
 
-            // if the name is valid, try to add it, need to get manager's permission
-            client.setClientName(client_name);
-            // add the user to the client list in server
-            try {
-                canvasServer.addUser(client);
-            } catch(RemoteException e) {
-                System.err.println("Error registering with remote server");
-            }
-            //do not get the permission from manager
-            if(!client.allowJoin()) {
+            // Set the client name and register it with the server
+            client.setClientName(clientName);
+
+            // Attempt to add the client to the server
+            canvasServer.addUser(client);
+
+            // Check if client is allowed to join
+            if (!client.allowJoin()) {
+                // If not, remove the client and close the application
                 canvasServer.kickUser(client.getClientName());
                 JOptionPane.showMessageDialog(null, "Sorry, you are not allowed to join!");
                 System.exit(0);
             }
-            //launch the White Board GUI and start drawing
+
+            // Launch the White Board GUI and start drawing
             client.initialize(canvasServer);
 
-        } catch(ConnectException e) {
-            System.err.println("Server is down or wrong IP address or  Port number.");
+        } catch (ConnectException e) {
+            System.err.println("Server is down or wrong IP address or Port number.");
             e.printStackTrace();
-        } catch(Exception e) {
+        } catch (Exception e) {
             System.err.println("Please enter Valid IP and Port number.");
             e.printStackTrace();
         }
     }
 
+    // Ask user to input a unique user name
+    private static String promptForUserName(ICanvasServer canvasServer) throws RemoteException {
+        String clientName = null;
+        boolean validName = false;
+
+        while (!validName) {
+            clientName = JOptionPane.showInputDialog("Please type in your name:");
+
+            if (clientName == null) {
+                // User clicked cancel, return null
+                return null;
+            } else if ("".equals(clientName)) {
+                // If name is empty, show error message
+                JOptionPane.showMessageDialog(null, "Please enter a name!");
+            } else {
+                // Check if the name is unique
+                if (isUniqueUserName(clientName, canvasServer)) {
+                    validName = true;
+                } else {
+                    // If not, show error message
+                    JOptionPane.showMessageDialog(null, "The name is taken, think a different name!");
+                }
+            }
+        }
+        // Return the valid name
+        return clientName;
+    }
+
+    // Check if the given username is unique among all clients
+    private static boolean isUniqueUserName(String userName, ICanvasServer canvasServer) throws RemoteException {
+        // Get the list of current users
+        List<ICanvasClient> users = canvasServer.getUsers();
+        if (users != null) {
+            for (ICanvasClient c : users) {
+                // If the username is already in use, return false
+                if (c != null && (userName.equals(c.getClientName()) || userName.equals("[Manager] " + c.getClientName()))) {
+                    return false;
+                }
+            }
+        }
+        // If the name is not in use, return true
+        return true;
+    }
 
 }

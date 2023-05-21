@@ -33,8 +33,8 @@ import java.rmi.RemoteException;
 
 public class CanvasWhiteboard extends JComponent {
     private static final long serialVersionUID = 1L;
-    private String clientName;
-    private boolean isManager;
+    private final String clientName;
+    private final boolean isManager;
     private Point startPt, endPt;
     private Color color;
     private String mode;
@@ -43,7 +43,7 @@ public class CanvasWhiteboard extends JComponent {
     private BufferedImage image; //store the dimension and data for canvas to save
     private BufferedImage previousCanvas;
     private Graphics2D graphics;//save the state of current/previous canvas
-    private ICanvasServer server;
+    private final ICanvasServer server;
     private boolean isModified = false;
 
    public CanvasWhiteboard(String name, boolean isManager, ICanvasServer RemoteInterface){
@@ -51,7 +51,7 @@ public class CanvasWhiteboard extends JComponent {
         this.clientName = name;
         this.isManager = isManager;
         this.color = Color.black;
-        this.mode = "draw"; //default mode
+        this.mode = "line"; //default mode
         this.text = "";
 
         // Disabling dual buffering may provide a performance advantage
@@ -79,57 +79,54 @@ public class CanvasWhiteboard extends JComponent {
                 endPt = e.getPoint ();
                 Shape shape = null;
                 if (graphics != null) {
-                    if (mode.equals("draw")) {
-                        //newShape. makeLine (startPt, endPt);
-                        graphics.setPaint(color);
-                        shape = makeLine(shape, startPt, endPt);
-                        startPt = endPt;
-                        try {
-                            CanvasStatus item = new CanvasStatus("drawing", clientName, mode, color, endPt, "");
-                            server.UpdateCanvas(item);
-                        } catch (RemoteException ex) {
-                            JOptionPane.showMessageDialog(null, "Canvas server is down.");
-                        }
-                    } else if (mode.equals("eraser")) {
-                        shape = makeLine(shape, startPt, endPt);
-                        startPt = endPt;
-                        graphics.setPaint(Color.white);
-                        graphics.setStroke(new BasicStroke(30.0f));
-                        try {
-                            CanvasStatus message = new CanvasStatus("drawing", clientName, mode, Color.white, endPt, "");
-                            server.UpdateCanvas(message);
-                        } catch (RemoteException ex) {
-                            JOptionPane.showMessageDialog(null, "Canvas server is down.");
-                        }
-                    } else if (mode.equals("line")) {
-                        //when drawing, draw the previous image then add to it
-                        graphics.setPaint(color);
-                        drawPreviousCanvas();
-                        shape = makeLine(shape, startPt, endPt);
-                    } else if (mode.equals("rect")) {
-                        graphics.setPaint(color);
-                        drawPreviousCanvas();
-                        shape = makeRect(shape, startPt, endPt);
-                    } else if (mode.equals("circle")) {
-                        graphics.setPaint(color);
-                        drawPreviousCanvas();
-                        shape = makeCircle(shape, startPt, endPt);
-                    } else if (mode.equals("oval")) {
-                        graphics.setPaint(color);
-                        drawPreviousCanvas();
-                        shape = makeOval(shape, startPt, endPt);
-                    } else if (mode.equals("star")) {
-                        graphics.setPaint(color);
-                        drawPreviousCanvas();
-                        shape = makeStar(shape, startPt, calculateDistance(startPt, endPt));
-                    } else if (mode.equals("text")) {
-                        graphics.setPaint(color);
-                        drawPreviousCanvas();
-                        graphics.setFont (new Font ("TimesRoman", Font.PLAIN, 20));
-                        graphics.drawString("Enter text here", endPt.x, endPt.y) ;
-                        shape = makeText(shape, startPt);
-                        Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 1, new float []{3}, 0);
-                        graphics.setStroke (dashed);
+                    switch (mode) {
+                        case "eraser":
+                            shape = makeLine(startPt, endPt);
+                            startPt = endPt;
+                            graphics.setPaint(Color.white);
+                            graphics.setStroke(new BasicStroke(30.0f));
+                            try {
+                                CanvasStatus message = new CanvasStatus("drawing", clientName, mode, Color.white, endPt, "");
+                                server.UpdateCanvas(message);
+                            } catch (RemoteException ex) {
+                                JOptionPane.showMessageDialog(null, "Canvas server is down.");
+                            }
+                            break;
+                        case "line":
+                            //when drawing, draw the previous image then add to it
+                            graphics.setPaint(color);
+                            drawPreviousCanvas();
+                            shape = makeLine(startPt, endPt);
+                            break;
+                        case "rect":
+                            graphics.setPaint(color);
+                            drawPreviousCanvas();
+                            shape = makeRect(startPt, endPt);
+                            break;
+                        case "circle":
+                            graphics.setPaint(color);
+                            drawPreviousCanvas();
+                            shape = makeCircle(startPt, endPt);
+                            break;
+                        case "oval":
+                            graphics.setPaint(color);
+                            drawPreviousCanvas();
+                            shape = makeOval(startPt, endPt);
+                            break;
+                        case "star":
+                            graphics.setPaint(color);
+                            drawPreviousCanvas();
+                            shape = makeStar(startPt, calculateDistance(startPt, endPt));
+                            break;
+                        case "text":
+                            graphics.setPaint(color);
+                            drawPreviousCanvas();
+                            graphics.setFont(new Font("TimesRoman", Font.PLAIN, 20));
+                            graphics.drawString("Enter text here", endPt.x, endPt.y);
+                            shape = makeText(startPt);
+                            Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 1, new float[]{3}, 0);
+                            graphics.setStroke(dashed);
+                            break;
                     }
                     //this shows the shape while dragging in local clients and does not send to server
                     graphics.draw(shape);
@@ -145,27 +142,32 @@ public class CanvasWhiteboard extends JComponent {
                endPt = e.getPoint();
                Shape shape = null;
                if (graphics != null) {
-                   if (mode.equals("line")) {
-                       shape = makeLine(shape, startPt, endPt);
-                   } else if (mode.equals("draw")) {
-                       shape = makeLine(shape, startPt, endPt);
-                   } else if (mode.equals("rect")) {
-                       shape = makeRect(shape, startPt, endPt);
-                   } else if (mode.equals("circle")) {
-                       shape = makeCircle(shape, startPt, endPt);
-                   } else if (mode.equals("oval")) {
-                       shape = makeOval(shape, startPt, endPt);
-                   } else if (mode.equals("star")) {
-                       shape = makeStar(shape, startPt, calculateDistance(startPt,endPt));
-                   }else if (mode.equals("text")) {
-                       text = JOptionPane.showInputDialog("What text you want to add?");
-                       if (text == null) {
-                           text = "";
-                       }
-                       drawPreviousCanvas();
-                       graphics.setFont(new Font("TimesRoman", Font.PLAIN, 20));
-                       graphics.drawString(text, endPt.x, endPt.y);
-                       graphics.setStroke(new BasicStroke(1.8f));
+                   switch (mode) {
+                       case "line":
+                           shape = makeLine(startPt, endPt);
+                           break;
+                       case "rect":
+                           shape = makeRect(startPt, endPt);
+                           break;
+                       case "circle":
+                           shape = makeCircle(startPt, endPt);
+                           break;
+                       case "oval":
+                           shape = makeOval(startPt, endPt);
+                           break;
+                       case "star":
+                           shape = makeStar(startPt, calculateDistance(startPt, endPt));
+                           break;
+                       case "text":
+                           text = JOptionPane.showInputDialog("What text you want to add?");
+                           if (text == null) {
+                               text = "";
+                           }
+                           drawPreviousCanvas();
+                           graphics.setFont(new Font("TimesRoman", Font.PLAIN, 20));
+                           graphics.drawString(text, endPt.x, endPt.y);
+                           graphics.setStroke(new BasicStroke(1.8f));
+                           break;
                    }
                    // if in shape modes
                    if (!mode.equals("text")) {
@@ -235,16 +237,10 @@ public class CanvasWhiteboard extends JComponent {
     public Color getCurrColor() {
         return color;
     }
-    public String gerCurrMode() {
-        return mode;
-    }
     public Graphics2D getGraphic() {
         return graphics;
     }
-    public BufferedImage getCanvas () {
-        saveCanvas() ;
-        return previousCanvas;
-    }
+
     public void reset(){
         graphics.setPaint (Color.white);
         graphics. fillRect(0, 0, 950, 550);
@@ -333,9 +329,6 @@ public class CanvasWhiteboard extends JComponent {
         color = new Color(0, 0, 139);
         graphics.setPaint(color);
     }
-    public void draw() {
-        mode = "draw";
-    }
     public void setLineMode() {
         mode = "line";
     }
@@ -361,30 +354,46 @@ public class CanvasWhiteboard extends JComponent {
         mode = "eraser";
     }
     // draw line or wiggles
-    public Shape makeLine(Shape shape, Point start, Point end) {
-        shape = new Line2D.Double(start.x, start.y, end.x, end.y);
-        return shape;
+    public Shape makeLine(Point start, Point end) {
+        return new Line2D.Double(start.x, start.y, end.x, end.y);
     }
-    //draw Rectangle
-    public Shape makeRect(Shape shape, Point start, Point end) {
-        int x = Math.min(start.x, end.x);
-        int y= Math.min(start.y, end.y) ;
-        int width = Math.abs (start.x - end.x);
-        int height = Math.abs(start.y - end.y);
-        shape = new Rectangle2D.Double(x, y, width, height);
-        return shape;
-    }
-    //draw circle
-    public Shape makeCircle (Shape shape, Point start, Point end) {
+    // Helper method that takes two points and returns the desired coordinates and dimensions for the shape (x, y,
+    // width, height)
+    private int[] getShapeDimensions(Point start, Point end) {
         int x = Math.min(start.x, end.x);
         int y = Math.min(start.y, end.y);
         int width = Math.abs(start.x - end.x);
         int height = Math.abs(start.y - end.y);
-        shape = new Ellipse2D.Double(x, y, Math.max(width, height), Math.max(width, height));
-        return shape;
+
+        return new int[] {x, y, width, height};
     }
+
+    public Shape makeRect(Point start, Point end) {
+        int[] dims = getShapeDimensions(start, end);
+        return new Rectangle2D.Double(dims[0], dims[1], dims[2], dims[3]);
+    }
+
+    public Shape makeCircle(Point start, Point end) {
+        int[] dims = getShapeDimensions(start, end);
+        int maxDimension = Math.max(dims[2], dims[3]);
+        return new Ellipse2D.Double(dims[0], dims[1], maxDimension, maxDimension);
+    }
+
+    public Shape makeOval(Point start, Point end) {
+        int[] dims = getShapeDimensions(start, end);
+        return new Ellipse2D.Double(dims[0], dims[1], dims[2], dims[3]);
+    }
+
+    public Shape makeText(Point start) {
+        int x = start.x - 5;
+        int y = start.y - 20;
+        int width = 180;
+        int height = 75;
+        return new RoundRectangle2D.Double(x, y, width, height, 20, 20);
+    }
+
     //draw star
-    public Shape makeStar(Shape shape, Point center, int radius) {
+    public Shape makeStar(Point center, int radius) {
         // The number of points of the star
         int numPoints = 5;
 
@@ -409,27 +418,7 @@ public class CanvasWhiteboard extends JComponent {
             yStarPoints[i] = yPoints[(2 * i) % numPoints];
         }
 
-        shape = new Polygon(xStarPoints, yStarPoints, numPoints);
-        return shape;
-    }
-
-    //draw oval
-    public Shape makeOval(Shape shape, Point startPt, Point endPt) {
-        int x = Math.min(startPt.x, endPt.x);
-        int y = Math.min(startPt.y, endPt.y);
-        int width = Math.abs(startPt.x - endPt.x);
-        int height = Math.abs(startPt.y - endPt.y);
-        shape = new Ellipse2D.Double(x, y, width, height);
-        return shape;
-    }
-    //Make text
-    public Shape makeText (Shape shape, Point start) {
-        int x = start.x - 5;
-        int y = start.y - 20;
-        int width = 130;
-        int height = 25;
-        shape = new RoundRectangle2D.Double(x, y, width, height, 15, 15);
-        return shape;
+        return new Polygon(xStarPoints, yStarPoints, numPoints);
     }
 
     public void showImage(BufferedImage openedImage) {
@@ -462,10 +451,7 @@ public class CanvasWhiteboard extends JComponent {
         int option = JOptionPane.showConfirmDialog(null, "Are you sure you want to open a new " +
                 "canvas? The previous canvas will be cleared. Please save first if you modified!", "Confirmation"
                 , JOptionPane.YES_NO_OPTION);
-        if (option == JOptionPane.YES_OPTION) {
-            return true;
-        }
-        return false;
+        return option == JOptionPane.YES_OPTION;
     }
 
     public boolean isModified() {

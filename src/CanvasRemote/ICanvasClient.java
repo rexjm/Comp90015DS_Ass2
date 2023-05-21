@@ -28,8 +28,6 @@ public interface ICanvasClient extends Remote, Serializable {
     // Update the client's chat box when a new message is received
     void updateChatBox(String chatMsg) throws RemoteException;
 
-    // Load a new image on the client's canvas when the manager opens a new image
-    void loadNewImage(byte[] imageData) throws IOException;
 
     // Get the client's name (username)
     String getClientName() throws RemoteException;

@@ -15,12 +15,12 @@ import java.rmi.server.UnicastRemoteObject;
 
 public class CanvasStatus extends UnicastRemoteObject implements ICanvasStatus {
     private static final long serialVersionUID = 1L;
-    private String drawState;
-    private String clientName;
-    private String mode;
-    private Color color;
-    private Point point;
-    private String text;
+    private final String drawState;
+    private final String clientName;
+    private final String mode;
+    private final Color color;
+    private final Point point;
+    private final String text;
     public CanvasStatus (String state, String name, String mode, Color color, Point pt, String text) throws RemoteException {
         this.drawState = state;
         this.clientName = name;

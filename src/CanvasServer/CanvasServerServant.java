@@ -30,7 +30,7 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
     private ArrayList<String> chatHistory = new ArrayList<>();
 
     protected CanvasServerServant() throws RemoteException {
-        this.clientSet = new HashSet<ICanvasClient>();
+        this.clientSet = new HashSet<>();
     }
 
 
@@ -107,8 +107,7 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
 
     @Override
     public List<ICanvasClient> getUsers() throws RemoteException {
-        List<ICanvasClient> clientList = new ArrayList<>(this.clientSet);
-        return clientList;
+        return new ArrayList<>(this.clientSet);
     }
 
 
@@ -139,7 +138,6 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
         }
         return image;
     }
-
 
     @Override
     public void updateServerChatBox(String chatMsg) throws RemoteException {
