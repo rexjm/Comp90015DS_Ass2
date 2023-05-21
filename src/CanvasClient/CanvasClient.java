@@ -1,3 +1,13 @@
+/**
+ * Name:Ruixiang
+ * Surname:TANG
+ * Student ID:1298221
+ * Description :This class represents the client side of a remote collaboration whiteboard application.
+ * The application allows multiple users to draw on the same canvas simultaneously from different computers.
+ * Key features include: Remote Collaborative Drawing, Various Drawing Tools and Color Selection, File Operations,
+ * User Management.
+ */
+
 package CanvasClient;
 
 import CanvasRemote.ICanvasClient;
@@ -674,9 +684,6 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
             );
         }
 
-        //format to same size
-//        layout.linkSize(SwingConstants.HORIZONTAL, cleanButton, saveButton, saveAsButton, openButton);
-
         // set the minimum framesize
         if (!isManager) {
             frame.setMinimumSize(new Dimension(800, 780));
@@ -778,10 +785,6 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         this.allowed = permission;
     }
 
-//    @Override
-//    public void clearChatHistory() throws RemoteException {
-//        chatList.clear();
-//    }
 
 
     @Override
@@ -847,9 +850,7 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
             canvasWhiteboard.repaint();
             //once finished drawing remove the start point of client x
             endPoints.remove(CanvasStatus.getName());
-//            return;
         }
-        return;
     }
 
 
@@ -867,10 +868,6 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         }
     }
 
-    @Override
-    public void notifyKickedOut() throws RemoteException {
-
-    }
 
     @Override
     public void updateChatBox(String chatMsg) throws RemoteException {
@@ -932,18 +929,6 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
         this.isManager = true;
         this.clientName = managerName;
     }
-
-//    @Override
-//    public byte[] synCanvas() throws RemoteException, IOException {
-//        ByteArrayOutputStream imageArray = new ByteArrayOutputStream();
-//        ImageIO.write(this.canvasWhiteboard.saveCanvas(), "png", imageArray);
-//        return imageArray.toByteArray();
-//    }
-
-//    @Override
-//    public void terminateApp() throws RemoteException {
-//
-//    }
 
 
     @Override

@@ -1,3 +1,12 @@
+/**
+ * Name:Ruixiang
+ * Surname:TANG
+ * Student ID:1298221
+ * Description :The class creates a server-side remote object that manages the clients of a remote drawing canvas service,
+ * handling operations such as updating the canvas, adding and removing users, cleaning all client canvases,
+ * and managing chat functionality.
+ */
+
 package CanvasServer;
 
 import CanvasRemote.ICanvasClient;
@@ -17,7 +26,6 @@ import java.util.Set;
  */
 public class CanvasServerServant extends UnicastRemoteObject implements ICanvasServer {
     private Set<ICanvasClient> clientSet;
-    private ICanvasClient manager;
     private boolean hasManager;
     private ArrayList<String> chatHistory = new ArrayList<>();
 
@@ -97,31 +105,12 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
         }
     }
 
-//
-//    // if the user quits
-//    @Override
-//    public void removeUser(String clientName) throws RemoteException {
-//        for (ICanvasClient client : clientSet) {
-//            if (client.getClientName().equals(clientName)) {
-//                this.clientSet.remove(client);
-//                System.out.println("User" + clientName + "quits!");
-//            }
-//        }
-//        for (ICanvasClient client : clientSet) {
-//            client.updateUserList(getUsers());
-//        }
-//    }
-
     @Override
     public List<ICanvasClient> getUsers() throws RemoteException {
         List<ICanvasClient> clientList = new ArrayList<>(this.clientSet);
         return clientList;
     }
 
-    @Override
-    public byte[] loadExistCanvas() throws RemoteException {
-        return new byte[0];
-    }
 
     // Once the manager creates a new whiteboard, all clients will clear their canvas
     @Override
@@ -138,16 +127,6 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
             }
         }
     }
-
-    @Override
-    public List<ICanvasClient> updateUserList() {
-        return null;
-    }
-
-//    @Override
-//    public void addChat(String s) throws RemoteException {
-//
-//    }
 
     @Override
     public byte[] getManagerImage() throws IOException {
@@ -199,24 +178,11 @@ public class CanvasServerServant extends UnicastRemoteObject implements ICanvasS
     }
 
 
-
-
     // Add a new client to the client set
     public void addClientToList(ICanvasClient client) {
         this.clientSet.add(client);
         System.out.println("Updated client set: " + clientSet);
     }
-
-    // Get the set of clients
-    public Set<ICanvasClient> getClientSet() {
-        return this.clientSet;
-    }
-
-    // Set the manager of the canvas
-    public void setManager(ICanvasClient manager) {
-        this.manager = manager;
-    }
-
 
     // Check if the canvas has a manager
     public boolean hasManager() {

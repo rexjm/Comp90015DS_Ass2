@@ -1,3 +1,14 @@
+/**
+ * Name:Ruixiang
+ * Surname:TANG
+ * Student ID:1298221
+ * Description :The CanvasWhiteboard class in Java represents a shared interactive whiteboard in a client-server
+ * system, which uses the RMI for communication. The class contains methods for handling user inputs like mouse
+ * clicks and drags, defining different modes of drawing, managing canvas states, and interacting with the server.
+ * This class is key to rendering the whiteboard and synchronizing changes between different clients.
+ */
+
+
 package CanvasClient;
 
 import CanvasRemote.ICanvasServer;

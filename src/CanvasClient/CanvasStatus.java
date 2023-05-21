@@ -1,3 +1,10 @@
+/**
+ * Name:Ruixiang
+ * Surname:TANG
+ * Student ID:1298221
+ * Description : The CanvasStatus class encapsulates the status of a drawing action on the whiteboard.
+ */
+
 package CanvasClient;
 
 import CanvasRemote.ICanvasStatus;
@@ -53,8 +60,4 @@ public class CanvasStatus extends UnicastRemoteObject implements ICanvasStatus {
         return this.mode;
     }
 
-    @Override
-    public String getShape() throws RemoteException {
-        return null;
-    }
 }
