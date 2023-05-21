@@ -1032,9 +1032,15 @@ public class CanvasClient extends UnicastRemoteObject implements ICanvasClient {
 
         } catch (ConnectException e) {
             System.err.println("Server is down or wrong IP address or Port number.");
+            JOptionPane.showMessageDialog(null, "Could not connect to the server. " +
+                    "Please ensure you've entered the correct IP address and Port number.", "Connection Error"
+                    , JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         } catch (Exception e) {
             System.err.println("Please enter Valid IP and Port number.");
+            JOptionPane.showMessageDialog(null, "Could not connect to the server. " +
+                    "Please ensure you've entered the correct IP address and Port number."
+                    , "Connection Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }
